@@ -1,0 +1,6031 @@
+app:
+  description: '面向企业内部制度、SOP、产品规则与FAQ的可信知识问答助手，
+
+    支持版本感知、权限感知、置信度分流与引用溯源。'
+  icon: female-office-worker
+  icon_background: '#E0F2FE'
+  icon_type: emoji
+  mode: advanced-chat
+  name: KnowFlow · 企业知识可信问答Agent
+  use_icon_as_answer_icon: false
+dependencies:
+- current_identifier: null
+  type: marketplace
+  value:
+    marketplace_plugin_unique_identifier: langgenius/openai_api_compatible:0.0.66@51801b51069b2578c3fcf6d38edc45c45efd8b7ef4fdb25f096bd84d4f95a53d
+    version: null
+- current_identifier: null
+  type: marketplace
+  value:
+    marketplace_plugin_unique_identifier: langgenius/zhipuai:0.0.34@c0673fcf12195f3fb26d9da34aee7883b8c4fd25d3ffef9f4b7cce220a936f28
+    version: null
+kind: app
+version: 0.7.0
+workflow:
+  conversation_variables: []
+  environment_variables: []
+  features:
+    file_upload:
+      allowed_file_extensions:
+      - .JPG
+      - .JPEG
+      - .PNG
+      - .GIF
+      - .WEBP
+      - .SVG
+      allowed_file_types:
+      - image
+      allowed_file_upload_methods:
+      - local_file
+      - remote_url
+      enabled: false
+      fileUploadConfig:
+        attachment_image_file_size_limit: 2
+        audio_file_size_limit: 50
+        batch_count_limit: 5
+        file_size_limit: 15
+        file_upload_limit: 50
+        image_file_batch_limit: 10
+        image_file_size_limit: 10
+        knowledge_file_size_limit: 15
+        single_chunk_attachment_limit: 10
+        skill_file_size_limit: 50
+        video_file_size_limit: 100
+        workflow_file_upload_limit: 10
+      image:
+        enabled: false
+        number_limits: 3
+        transfer_methods:
+        - local_file
+        - remote_url
+      number_limits: 3
+    opening_statement: ''
+    retriever_resource:
+      enabled: true
+    sensitive_word_avoidance:
+      enabled: false
+    speech_to_text:
+      enabled: false
+    suggested_questions: []
+    suggested_questions_after_answer:
+      enabled: false
+    text_to_speech:
+      enabled: false
+      language: ''
+      voice: ''
+  graph:
+    edges:
+    - data:
+        isInIteration: false
+        isInLoop: false
+        sourceType: start
+        targetType: question-classifier
+      id: 1787905964188-source-1788145926581-target
+      selected: false
+      source: '1787905964188'
+      sourceHandle: source
+      target: '1788145926581'
+      targetHandle: target
+      type: custom
+      zIndex: 0
+    - data:
+        isInIteration: false
+        isInLoop: false
+        sourceType: llm
+        targetType: answer
+      id: 17881634627960-source-17881635634270-target
+      selected: false
+      source: '17881634627960'
+      sourceHandle: source
+      target: '17881635634270'
+      targetHandle: target
+      type: custom
+      zIndex: 0
+    - data:
+        isInIteration: false
+        isInLoop: false
+        sourceType: llm
+        targetType: answer
+      id: 17881637067450-source-17881637120870-target
+      selected: false
+      source: '17881637067450'
+      sourceHandle: source
+      target: '17881637120870'
+      targetHandle: target
+      type: custom
+      zIndex: 0
+    - data:
+        isInIteration: false
+        isInLoop: false
+        sourceType: llm
+        targetType: answer
+      id: 17881638624640-source-17881638661900-target
+      selected: false
+      source: '17881638624640'
+      sourceHandle: source
+      target: '17881638661900'
+      targetHandle: target
+      type: custom
+      zIndex: 0
+    - data:
+        isInIteration: false
+        isInLoop: false
+        sourceType: question-classifier
+        targetType: answer
+      id: 1788145926581-1788146229538-1788164012316-target
+      selected: false
+      source: '1788145926581'
+      sourceHandle: '1788146229538'
+      target: '1788164012316'
+      targetHandle: target
+      type: custom
+      zIndex: 0
+    - data:
+        isInIteration: false
+        isInLoop: false
+        sourceType: question-classifier
+        targetType: knowledge-retrieval
+      id: 1788167244974-2-1788167696813-target
+      selected: false
+      source: '1788167244974'
+      sourceHandle: '2'
+      target: '1788167696813'
+      targetHandle: target
+      type: custom
+      zIndex: 0
+    - data:
+        isInIteration: false
+        isInLoop: false
+        sourceType: knowledge-retrieval
+        targetType: llm
+      id: 1788167696813-source-17881677472210-target
+      selected: false
+      source: '1788167696813'
+      sourceHandle: source
+      target: '17881677472210'
+      targetHandle: target
+      type: custom
+      zIndex: 0
+    - data:
+        isInIteration: false
+        isInLoop: false
+        sourceType: llm
+        targetType: answer
+      id: 17881677472210-source-17881678263900-target
+      selected: false
+      source: '17881677472210'
+      sourceHandle: source
+      target: '17881678263900'
+      targetHandle: target
+      type: custom
+      zIndex: 0
+    - data:
+        isInIteration: false
+        isInLoop: false
+        sourceType: question-classifier
+        targetType: question-classifier
+      id: 1788145926581-1-17881703703610-target
+      selected: false
+      source: '1788145926581'
+      sourceHandle: '1'
+      target: '17881703703610'
+      targetHandle: target
+      type: custom
+      zIndex: 0
+    - data:
+        isInIteration: false
+        isInLoop: false
+        sourceType: question-classifier
+        targetType: knowledge-retrieval
+      id: 17881703703610-2-17881705402320-target
+      selected: false
+      source: '17881703703610'
+      sourceHandle: '2'
+      target: '17881705402320'
+      targetHandle: target
+      type: custom
+      zIndex: 0
+    - data:
+        isInIteration: false
+        isInLoop: false
+        sourceType: knowledge-retrieval
+        targetType: llm
+      id: 17881705402320-source-17881705442100-target
+      selected: false
+      source: '17881705402320'
+      sourceHandle: source
+      target: '17881705442100'
+      targetHandle: target
+      type: custom
+      zIndex: 0
+    - data:
+        isInIteration: false
+        isInLoop: false
+        sourceType: llm
+        targetType: answer
+      id: 17881705442100-source-17881705485330-target
+      selected: false
+      source: '17881705442100'
+      sourceHandle: source
+      target: '17881705485330'
+      targetHandle: target
+      type: custom
+      zIndex: 0
+    - data:
+        isInIteration: false
+        isInLoop: false
+        sourceType: question-classifier
+        targetType: question-classifier
+      id: 1788145926581-1788146030962-17881714759680-target
+      selected: false
+      source: '1788145926581'
+      sourceHandle: '1788146030962'
+      target: '17881714759680'
+      targetHandle: target
+      type: custom
+      zIndex: 0
+    - data:
+        isInIteration: false
+        isInLoop: false
+        sourceType: question-classifier
+        targetType: knowledge-retrieval
+      id: 17881714759680-2-17881715439040-target
+      selected: false
+      source: '17881714759680'
+      sourceHandle: '2'
+      target: '17881715439040'
+      targetHandle: target
+      type: custom
+      zIndex: 0
+    - data:
+        isInIteration: false
+        isInLoop: false
+        sourceType: knowledge-retrieval
+        targetType: llm
+      id: 17881715439040-source-17881715511460-target
+      selected: false
+      source: '17881715439040'
+      sourceHandle: source
+      target: '17881715511460'
+      targetHandle: target
+      type: custom
+      zIndex: 0
+    - data:
+        isInIteration: false
+        isInLoop: false
+        sourceType: llm
+        targetType: answer
+      id: 17881715511460-source-17881715576400-target
+      selected: false
+      source: '17881715511460'
+      sourceHandle: source
+      target: '17881715576400'
+      targetHandle: target
+      type: custom
+      zIndex: 0
+    - data:
+        isInIteration: false
+        isInLoop: false
+        sourceType: question-classifier
+        targetType: question-classifier
+      id: 1788145926581-2-1788230827886-target
+      selected: false
+      source: '1788145926581'
+      sourceHandle: '2'
+      target: '1788230827886'
+      targetHandle: target
+      type: custom
+      zIndex: 0
+    - data:
+        isInIteration: false
+        isInLoop: false
+        sourceType: question-classifier
+        targetType: question-classifier
+      id: 1788230827886-1-1788167244974-target
+      selected: false
+      source: '1788230827886'
+      sourceHandle: '1'
+      target: '1788167244974'
+      targetHandle: target
+      type: custom
+      zIndex: 0
+    - data:
+        isInIteration: false
+        isInLoop: false
+        sourceType: question-classifier
+        targetType: if-else
+      id: 1788230827886-2-1788230987381-target
+      selected: false
+      source: '1788230827886'
+      sourceHandle: '2'
+      target: '1788230987381'
+      targetHandle: target
+      type: custom
+      zIndex: 0
+    - data:
+        isInIteration: false
+        isInLoop: false
+        sourceType: if-else
+        targetType: knowledge-retrieval
+      id: 1788230987381-true-1788231762639-target
+      selected: false
+      source: '1788230987381'
+      sourceHandle: 'true'
+      target: '1788231762639'
+      targetHandle: target
+      type: custom
+      zIndex: 0
+    - data:
+        isInIteration: false
+        isInLoop: false
+        sourceType: knowledge-retrieval
+        targetType: llm
+      id: 1788231762639-source-17882319073340-target
+      selected: false
+      source: '1788231762639'
+      sourceHandle: source
+      target: '17882319073340'
+      targetHandle: target
+      type: custom
+      zIndex: 0
+    - data:
+        isInIteration: false
+        isInLoop: false
+        sourceType: llm
+        targetType: answer
+      id: 17882319073340-source-17882319729050-target
+      selected: false
+      source: '17882319073340'
+      sourceHandle: source
+      target: '17882319729050'
+      targetHandle: target
+      type: custom
+      zIndex: 0
+    - data:
+        isInIteration: false
+        isInLoop: false
+        sourceType: if-else
+        targetType: answer
+      id: 1788230987381-false-1788232132145-target
+      selected: false
+      source: '1788230987381'
+      sourceHandle: 'false'
+      target: '1788232132145'
+      targetHandle: target
+      type: custom
+      zIndex: 0
+    - data:
+        isInIteration: false
+        isInLoop: false
+        sourceType: if-else
+        targetType: knowledge-retrieval
+      id: 1788230987381-2f6485ad-ca80-4c4b-bf89-a14dfed54024-1788231762639-target
+      selected: false
+      source: '1788230987381'
+      sourceHandle: 2f6485ad-ca80-4c4b-bf89-a14dfed54024
+      target: '1788231762639'
+      targetHandle: target
+      type: custom
+      zIndex: 0
+    - data:
+        isInIteration: false
+        isInLoop: false
+        sourceType: question-classifier
+        targetType: knowledge-retrieval
+      id: 1788167244974-1-1788233597400-target
+      selected: false
+      source: '1788167244974'
+      sourceHandle: '1'
+      target: '1788233597400'
+      targetHandle: target
+      type: custom
+      zIndex: 0
+    - data:
+        isInIteration: false
+        isInLoop: false
+        sourceType: knowledge-retrieval
+        targetType: llm
+      id: 1788233597400-source-1788233745457-target
+      selected: false
+      source: '1788233597400'
+      sourceHandle: source
+      target: '1788233745457'
+      targetHandle: target
+      type: custom
+      zIndex: 0
+    - data:
+        isInIteration: false
+        isInLoop: false
+        sourceType: llm
+        targetType: if-else
+      id: 1788233745457-source-1788233976757-target
+      selected: false
+      source: '1788233745457'
+      sourceHandle: source
+      target: '1788233976757'
+      targetHandle: target
+      type: custom
+      zIndex: 0
+    - data:
+        isInIteration: false
+        isInLoop: false
+        sourceType: llm
+        targetType: answer
+      id: 17882341957060-source-17882342521980-target
+      selected: false
+      source: '17882341957060'
+      sourceHandle: source
+      target: '17882342521980'
+      targetHandle: target
+      type: custom
+      zIndex: 0
+    - data:
+        isInIteration: false
+        isInLoop: false
+        sourceType: if-else
+        targetType: llm
+      id: 1788233976757-true-1788234280430-target
+      selected: false
+      source: '1788233976757'
+      sourceHandle: 'true'
+      target: '1788234280430'
+      targetHandle: target
+      type: custom
+      zIndex: 0
+    - data:
+        isInIteration: false
+        isInLoop: false
+        sourceType: llm
+        targetType: answer
+      id: 1788234280430-source-17882344122970-target
+      selected: false
+      source: '1788234280430'
+      sourceHandle: source
+      target: '17882344122970'
+      targetHandle: target
+      type: custom
+      zIndex: 0
+    - data:
+        isInIteration: false
+        isInLoop: false
+        sourceType: if-else
+        targetType: answer
+      id: 1788233976757-6f41c9b6-b334-4e38-aa7d-5eb3af88a639-1788234477970-target
+      selected: false
+      source: '1788233976757'
+      sourceHandle: 6f41c9b6-b334-4e38-aa7d-5eb3af88a639
+      target: '1788234477970'
+      targetHandle: target
+      type: custom
+      zIndex: 0
+    - data:
+        isInIteration: false
+        isInLoop: false
+        sourceType: if-else
+        targetType: llm
+      id: 1788233976757-86b25fcc-69f4-402a-9510-a6c4aac7edea-17882341957060-target
+      selected: false
+      source: '1788233976757'
+      sourceHandle: 86b25fcc-69f4-402a-9510-a6c4aac7edea
+      target: '17882341957060'
+      targetHandle: target
+      type: custom
+      zIndex: 0
+    - data:
+        isInIteration: false
+        isInLoop: false
+        sourceType: if-else
+        targetType: answer
+      id: 1788233976757-false-1788234643652-target
+      selected: false
+      source: '1788233976757'
+      sourceHandle: 'false'
+      target: '1788234643652'
+      targetHandle: target
+      type: custom
+      zIndex: 0
+    - data:
+        isInIteration: false
+        isInLoop: false
+        sourceType: question-classifier
+        targetType: knowledge-retrieval
+      id: 17881703703610-1-17882476789780-target
+      selected: false
+      source: '17881703703610'
+      sourceHandle: '1'
+      target: '17882476789780'
+      targetHandle: target
+      type: custom
+      zIndex: 0
+    - data:
+        isInIteration: false
+        isInLoop: false
+        sourceType: knowledge-retrieval
+        targetType: llm
+      id: 17882476789780-source-17882478028510-target
+      selected: false
+      source: '17882476789780'
+      sourceHandle: source
+      target: '17882478028510'
+      targetHandle: target
+      type: custom
+      zIndex: 0
+    - data:
+        isInIteration: false
+        isInLoop: false
+        sourceType: llm
+        targetType: if-else
+      id: 17882478028510-source-17882479504310-target
+      selected: false
+      source: '17882478028510'
+      sourceHandle: source
+      target: '17882479504310'
+      targetHandle: target
+      type: custom
+      zIndex: 0
+    - data:
+        isInIteration: false
+        isInLoop: false
+        sourceType: if-else
+        targetType: llm
+      id: 17882479504310-86b25fcc-69f4-402a-9510-a6c4aac7edea-17881634627960-target
+      selected: false
+      source: '17882479504310'
+      sourceHandle: 86b25fcc-69f4-402a-9510-a6c4aac7edea
+      target: '17881634627960'
+      targetHandle: target
+      type: custom
+      zIndex: 0
+    - data:
+        isInIteration: false
+        isInLoop: false
+        sourceType: if-else
+        targetType: answer
+      id: 17882479504310-6f41c9b6-b334-4e38-aa7d-5eb3af88a639-1788248138027-target
+      selected: false
+      source: '17882479504310'
+      sourceHandle: 6f41c9b6-b334-4e38-aa7d-5eb3af88a639
+      target: '1788248138027'
+      targetHandle: target
+      type: custom
+      zIndex: 0
+    - data:
+        isInIteration: false
+        isInLoop: false
+        sourceType: if-else
+        targetType: answer
+      id: 17882479504310-false-1788248190027-target
+      selected: false
+      source: '17882479504310'
+      sourceHandle: 'false'
+      target: '1788248190027'
+      targetHandle: target
+      type: custom
+      zIndex: 0
+    - data:
+        isInIteration: false
+        isInLoop: false
+        sourceType: if-else
+        targetType: answer
+      id: 17882479504310-true-1788248229737-target
+      selected: false
+      source: '17882479504310'
+      sourceHandle: 'true'
+      target: '1788248229737'
+      targetHandle: target
+      type: custom
+      zIndex: 0
+    - data:
+        isInIteration: false
+        isInLoop: false
+        sourceType: question-classifier
+        targetType: knowledge-retrieval
+      id: 17881714759680-1-17882545361670-target
+      selected: false
+      source: '17881714759680'
+      sourceHandle: '1'
+      target: '17882545361670'
+      targetHandle: target
+      type: custom
+      zIndex: 0
+    - data:
+        isInIteration: false
+        isInLoop: false
+        sourceType: knowledge-retrieval
+        targetType: llm
+      id: 17882545361670-source-17882546095110-target
+      selected: false
+      source: '17882545361670'
+      sourceHandle: source
+      target: '17882546095110'
+      targetHandle: target
+      type: custom
+      zIndex: 0
+    - data:
+        isInIteration: false
+        isInLoop: false
+        sourceType: llm
+        targetType: if-else
+      id: 17882546095110-source-17882548088070-target
+      selected: false
+      source: '17882546095110'
+      sourceHandle: source
+      target: '17882548088070'
+      targetHandle: target
+      type: custom
+      zIndex: 0
+    - data:
+        isInIteration: false
+        isInLoop: false
+        sourceType: if-else
+        targetType: llm
+      id: 17882548088070-86b25fcc-69f4-402a-9510-a6c4aac7edea-17881637067450-target
+      selected: false
+      source: '17882548088070'
+      sourceHandle: 86b25fcc-69f4-402a-9510-a6c4aac7edea
+      target: '17881637067450'
+      targetHandle: target
+      type: custom
+      zIndex: 0
+    - data:
+        isInIteration: false
+        isInLoop: false
+        sourceType: if-else
+        targetType: answer
+      id: 17882548088070-6f41c9b6-b334-4e38-aa7d-5eb3af88a639-1788254996488-target
+      selected: false
+      source: '17882548088070'
+      sourceHandle: 6f41c9b6-b334-4e38-aa7d-5eb3af88a639
+      target: '1788254996488'
+      targetHandle: target
+      type: custom
+      zIndex: 0
+    - data:
+        isInIteration: false
+        isInLoop: false
+        sourceType: if-else
+        targetType: answer
+      id: 17882548088070-false-1788255046406-target
+      selected: false
+      source: '17882548088070'
+      sourceHandle: 'false'
+      target: '1788255046406'
+      targetHandle: target
+      type: custom
+      zIndex: 0
+    - data:
+        isInIteration: false
+        isInLoop: false
+        sourceType: if-else
+        targetType: answer
+      id: 17882548088070-true-1788255129214-target
+      selected: false
+      source: '17882548088070'
+      sourceHandle: 'true'
+      target: '1788255129214'
+      targetHandle: target
+      type: custom
+      zIndex: 0
+    - data:
+        isInIteration: false
+        isInLoop: false
+        sourceType: question-classifier
+        targetType: knowledge-retrieval
+      id: 1788145926581-1788146181385-17882571906040-target
+      selected: false
+      source: '1788145926581'
+      sourceHandle: '1788146181385'
+      target: '17882571906040'
+      targetHandle: target
+      type: custom
+      zIndex: 0
+    - data:
+        isInIteration: false
+        isInLoop: false
+        sourceType: knowledge-retrieval
+        targetType: llm
+      id: 17882571906040-source-17882573190840-target
+      source: '17882571906040'
+      sourceHandle: source
+      target: '17882573190840'
+      targetHandle: target
+      type: custom
+      zIndex: 0
+    - data:
+        isInIteration: false
+        isInLoop: false
+        sourceType: llm
+        targetType: if-else
+      id: 17882573190840-source-17882572740190-target
+      source: '17882573190840'
+      sourceHandle: source
+      target: '17882572740190'
+      targetHandle: target
+      type: custom
+      zIndex: 0
+    - data:
+        isInIteration: false
+        isInLoop: false
+        sourceType: if-else
+        targetType: llm
+      id: 17882572740190-86b25fcc-69f4-402a-9510-a6c4aac7edea-17881638624640-target
+      source: '17882572740190'
+      sourceHandle: 86b25fcc-69f4-402a-9510-a6c4aac7edea
+      target: '17881638624640'
+      targetHandle: target
+      type: custom
+      zIndex: 0
+    - data:
+        isInIteration: false
+        isInLoop: false
+        sourceType: if-else
+        targetType: answer
+      id: 17882572740190-6f41c9b6-b334-4e38-aa7d-5eb3af88a639-1788257517515-target
+      source: '17882572740190'
+      sourceHandle: 6f41c9b6-b334-4e38-aa7d-5eb3af88a639
+      target: '1788257517515'
+      targetHandle: target
+      type: custom
+      zIndex: 0
+    - data:
+        isInIteration: false
+        isInLoop: false
+        sourceType: if-else
+        targetType: answer
+      id: 17882572740190-false-1788257570747-target
+      source: '17882572740190'
+      sourceHandle: 'false'
+      target: '1788257570747'
+      targetHandle: target
+      type: custom
+      zIndex: 0
+    - data:
+        isInIteration: false
+        isInLoop: false
+        sourceType: if-else
+        targetType: answer
+      id: 17882572740190-true-1788257615634-target
+      source: '17882572740190'
+      sourceHandle: 'true'
+      target: '1788257615634'
+      targetHandle: target
+      type: custom
+      zIndex: 0
+    - data:
+        isInIteration: false
+        isInLoop: false
+        sourceType: question-classifier
+        targetType: knowledge-retrieval
+      id: 17881714759680-1788403227913-1788403294643-target
+      source: '17881714759680'
+      sourceHandle: '1788403227913'
+      target: '1788403294643'
+      targetHandle: target
+      type: custom
+      zIndex: 0
+    - data:
+        isInIteration: false
+        isInLoop: false
+        sourceType: question-classifier
+        targetType: knowledge-retrieval
+      id: 17881714759680-1788403227913-1788403363072-target
+      source: '17881714759680'
+      sourceHandle: '1788403227913'
+      target: '1788403363072'
+      targetHandle: target
+      type: custom
+      zIndex: 0
+    - data:
+        isInIteration: false
+        isInLoop: false
+        sourceType: knowledge-retrieval
+        targetType: llm
+      id: 1788403294643-source-1788403440272-target
+      source: '1788403294643'
+      sourceHandle: source
+      target: '1788403440272'
+      targetHandle: target
+      type: custom
+      zIndex: 0
+    - data:
+        isInIteration: false
+        isInLoop: false
+        sourceType: knowledge-retrieval
+        targetType: llm
+      id: 1788403363072-source-1788403440272-target
+      source: '1788403363072'
+      sourceHandle: source
+      target: '1788403440272'
+      targetHandle: target
+      type: custom
+      zIndex: 0
+    - data:
+        isInIteration: false
+        isInLoop: false
+        sourceType: llm
+        targetType: answer
+      id: 1788403440272-source-1788404065570-target
+      source: '1788403440272'
+      sourceHandle: source
+      target: '1788404065570'
+      targetHandle: target
+      type: custom
+      zIndex: 0
+    nodes:
+    - data:
+        selected: false
+        title: User_input
+        type: start
+        variables:
+        - default: employee
+          hint: ''
+          label: user_role
+          options:
+          - employee
+          - finance_manager
+          - admin
+          placeholder: ''
+          required: true
+          type: select
+          variable: user_role
+      height: 108
+      id: '1787905964188'
+      position:
+        x: -420.5689014578153
+        y: -695.3327160966908
+      positionAbsolute:
+        x: -420.5689014578153
+        y: -695.3327160966908
+      selected: false
+      sourcePosition: right
+      targetPosition: left
+      type: custom
+      width: 242
+      zIndex: 0
+    - data:
+        classes:
+        - id: '1'
+          label: HR
+          name: 涉及员工入职、转正、试用期、请假、考勤、人事制度、信息安全基础规范、新员工指引等内部员工问题。
+        - id: '2'
+          label: Finance
+          name: 涉及差旅、住宿、交通、餐补、报销、发票、预算、财务审批规则等问题。
+        - id: '1788146030962'
+          label: Product
+          name: 涉及产品A、退款、取消订阅、产品政策、产品使用规则。
+        - id: '1788146181385'
+          label: Service
+          name: 涉及客服、投诉、售后、客户服务、工单、首次响应、账号客服FAQ等问题。
+        - id: '1788146229538'
+          label: Other
+          name: 无法归入以上企业内部知识域，或用户询问企业知识库无法支持的问题。
+        model:
+          completion_params:
+            temperature: 0.7
+          mode: chat
+          name: glm-4.7-flash
+          provider: langgenius/zhipuai/zhipuai
+        query_variable_selector:
+        - sys
+        - query
+        selected: false
+        title: Domain_Classifier
+        type: question-classifier
+        vision:
+          enabled: false
+      height: 303
+      id: '1788145926581'
+      position:
+        x: -102.81792610359254
+        y: -711.5964887621424
+      positionAbsolute:
+        x: -102.81792610359254
+        y: -711.5964887621424
+      selected: false
+      sourcePosition: right
+      targetPosition: left
+      type: custom
+      width: 242
+      zIndex: 0
+    - data:
+        context:
+          enabled: true
+          variable_selector:
+          - '17882476789780'
+          - result
+        desc: ''
+        isInIteration: false
+        isInLoop: false
+        memory:
+          query_prompt_template: '用户问题：
+
+            {{#sys.query#}}
+
+            请严格依据知识库上下文回答。'
+          role_prefix:
+            assistant: ''
+            user: ''
+          window:
+            enabled: false
+            size: 50
+        model:
+          completion_params:
+            temperature: 0.7
+          mode: chat
+          name: glm-4.7-flash
+          provider: langgenius/zhipuai/zhipuai
+        prompt_template:
+        - id: 7d983629-644f-491a-a120-d571f4420517
+          role: system
+          text: "你是 KnowFlow 企业内部知识可信问答助手。\n\n你的任务是严格根据提供的企业内部知识库上下文回答用户问题。\n\n【企业知识库上下文】\n\
+            \n{{#context#}}\n\n【回答规则】\n\n1. 企业制度、费用、流程和规则类信息只能依据上述知识库上下文回答。\n2. 不允许使用外部常识补充或猜测企业内部规则。\n\
+            3. 如果上述知识库上下文中存在能够直接或间接支持问题的内容，应优先依据该内容回答。\n4. 如果知识库上下文中没有足够依据，明确回答：\n\
+            \   “当前知识库中没有找到足够可靠的依据支持这个问题。”\n5. 不得编造金额、日期、制度名称、审批流程或其他企业内部信息。\n6. 优先使用标记为“当前生效”的制度或\
+            \ FAQ。\n7. 回答简洁、明确，先给结论，再给必要说明。\n8. 如果答案存在条件限制，必须一并说明，不能只给部分结论。\n\n回答格式：\n\
+            \n【答案】\n直接回答问题。\n\n【依据】\n简要说明依据的制度、FAQ 或关键规则。\n\n如果证据不足，则输出：\n\n【暂无法确认】\n\
+            当前知识库中没有找到足够可靠的依据支持这个问题，我不会基于猜测生成企业内部规则。"
+        selected: false
+        title: Answer_HR
+        type: llm
+        vision:
+          enabled: false
+      height: 87
+      id: '17881634627960'
+      position:
+        x: 1867.1858543487547
+        y: -1339.2774223673794
+      positionAbsolute:
+        x: 1867.1858543487547
+        y: -1339.2774223673794
+      selected: false
+      sourcePosition: right
+      targetPosition: left
+      type: custom
+      width: 242
+      zIndex: 0
+    - data:
+        answer: '{{#17881634627960.text#}}'
+        desc: ''
+        isInIteration: false
+        isInLoop: false
+        selected: false
+        title: Final_HR
+        type: answer
+        variables: []
+      height: 101
+      id: '17881635634270'
+      position:
+        x: 2140.99860319392
+        y: -1352.6646813904272
+      positionAbsolute:
+        x: 2140.99860319392
+        y: -1352.6646813904272
+      selected: false
+      sourcePosition: right
+      targetPosition: left
+      type: custom
+      width: 242
+      zIndex: 0
+    - data:
+        context:
+          enabled: true
+          variable_selector:
+          - '17882545361670'
+          - result
+        desc: ''
+        isInIteration: false
+        isInLoop: false
+        memory:
+          query_prompt_template: '用户问题：
+
+            {{#sys.query#}}
+
+            请严格依据知识库上下文回答。'
+          role_prefix:
+            assistant: ''
+            user: ''
+          window:
+            enabled: false
+            size: 50
+        model:
+          completion_params:
+            temperature: 0.7
+          mode: chat
+          name: glm-4.7-flash
+          provider: langgenius/zhipuai/zhipuai
+        prompt_template:
+        - id: 7d983629-644f-491a-a120-d571f4420517
+          role: system
+          text: "你是 KnowFlow 企业内部知识可信问答助手。\n\n你的任务是严格根据提供的企业内部知识库上下文回答用户问题。\n\n【企业知识库上下文】\n\
+            \n{{#context#}}\n\n【回答规则】\n\n1. 企业制度、费用、流程和规则类信息只能依据上述知识库上下文回答。\n2. 不允许使用外部常识补充或猜测企业内部规则。\n\
+            3. 如果上述知识库上下文中存在能够直接或间接支持问题的内容，应优先依据该内容回答。\n4. 如果知识库上下文中没有足够依据，明确回答：\n\
+            \   “当前知识库中没有找到足够可靠的依据支持这个问题。”\n5. 不得编造金额、日期、制度名称、审批流程或其他企业内部信息。\n6. 优先使用标记为“当前生效”的制度或\
+            \ FAQ。\n7. 回答简洁、明确，先给结论，再给必要说明。\n8. 如果答案存在条件限制，必须一并说明，不能只给部分结论。\n\n回答格式：\n\
+            \n【答案】\n直接回答问题。\n\n【依据】\n简要说明依据的制度、FAQ 或关键规则。\n\n如果证据不足，则输出：\n\n【暂无法确认】\n\
+            当前知识库中没有找到足够可靠的依据支持这个问题，我不会基于猜测生成企业内部规则。"
+        selected: false
+        title: Answer_PRODUCT
+        type: llm
+        vision:
+          enabled: false
+      height: 87
+      id: '17881637067450'
+      position:
+        x: 1874.1502588551239
+        y: 71.82163492595743
+      positionAbsolute:
+        x: 1874.1502588551239
+        y: 71.82163492595743
+      selected: false
+      sourcePosition: right
+      targetPosition: left
+      type: custom
+      width: 242
+      zIndex: 0
+    - data:
+        answer: '{{#17881637067450.text#}}'
+        desc: ''
+        isInIteration: false
+        isInLoop: false
+        selected: false
+        title: Final_PRODUCT
+        type: answer
+        variables: []
+      height: 101
+      id: '17881637120870'
+      position:
+        x: 2140.99860319392
+        y: 66.56889856337997
+      positionAbsolute:
+        x: 2140.99860319392
+        y: 66.56889856337997
+      selected: false
+      sourcePosition: right
+      targetPosition: left
+      type: custom
+      width: 242
+      zIndex: 0
+    - data:
+        context:
+          enabled: true
+          variable_selector:
+          - '17882571906040'
+          - result
+        desc: ''
+        isInIteration: false
+        isInLoop: false
+        memory:
+          query_prompt_template: '用户问题：
+
+            {{#sys.query#}}
+
+            请严格依据知识库上下文回答。'
+          role_prefix:
+            assistant: ''
+            user: ''
+          window:
+            enabled: false
+            size: 50
+        model:
+          completion_params:
+            temperature: 0.7
+          mode: chat
+          name: glm-4.7-flash
+          provider: langgenius/zhipuai/zhipuai
+        prompt_template:
+        - id: 7d983629-644f-491a-a120-d571f4420517
+          role: system
+          text: "你是 KnowFlow 企业内部知识可信问答助手。\n\n你的任务是严格根据提供的企业内部知识库上下文回答用户问题。\n\n【企业知识库上下文】\n\
+            \n{{#context#}}\n\n【回答规则】\n\n1. 企业制度、费用、流程和规则类信息只能依据上述知识库上下文回答。\n2. 不允许使用外部常识补充或猜测企业内部规则。\n\
+            3. 如果上述知识库上下文中存在能够直接或间接支持问题的内容，应优先依据该内容回答。\n4. 如果知识库上下文中没有足够依据，明确回答：\n\
+            \   “当前知识库中没有找到足够可靠的依据支持这个问题。”\n5. 不得编造金额、日期、制度名称、审批流程或其他企业内部信息。\n6. 优先使用标记为“当前生效”的制度或\
+            \ FAQ。\n7. 回答简洁、明确，先给结论，再给必要说明。\n8. 如果答案存在条件限制，必须一并说明，不能只给部分结论。\n\n回答格式：\n\
+            \n【答案】\n直接回答问题。\n\n【依据】\n简要说明依据的制度、FAQ 或关键规则。\n\n如果证据不足，则输出：\n\n【暂无法确认】\n\
+            当前知识库中没有找到足够可靠的依据支持这个问题，我不会基于猜测生成企业内部规则。"
+        selected: false
+        title: Answer_SERVICE
+        type: llm
+        vision:
+          enabled: false
+      height: 87
+      id: '17881638624640'
+      position:
+        x: 1559.6498259482778
+        y: 762.8623220315881
+      positionAbsolute:
+        x: 1559.6498259482778
+        y: 762.8623220315881
+      selected: false
+      sourcePosition: right
+      targetPosition: left
+      type: custom
+      width: 242
+      zIndex: 0
+    - data:
+        answer: '{{#17881638624640.text#}}'
+        desc: ''
+        isInIteration: false
+        isInLoop: false
+        selected: false
+        title: Final_SERVICE
+        type: answer
+        variables: []
+      height: 101
+      id: '17881638661900'
+      position:
+        x: 1833.5704444815033
+        y: 746.1894397999737
+      positionAbsolute:
+        x: 1833.5704444815033
+        y: 746.1894397999737
+      selected: false
+      sourcePosition: right
+      targetPosition: left
+      type: custom
+      width: 242
+      zIndex: 0
+    - data:
+        answer: '【暂无法确认】
+
+
+          当前问题暂时不属于已接入的企业内部知识范围，
+
+          我不会基于外部常识猜测企业内部规则。
+
+
+          你可以：
+
+          1. 补充具体部门或业务场景；
+
+          2. 指定具体制度或产品；
+
+          3. 换一种更明确的问法。'
+        selected: false
+        title: Other_Refusal
+        type: answer
+        variables: []
+      height: 179
+      id: '1788164012316'
+      position:
+        x: 577.4677369211622
+        y: 539.1457226271482
+      positionAbsolute:
+        x: 577.4677369211622
+        y: 539.1457226271482
+      selected: false
+      sourcePosition: right
+      targetPosition: left
+      type: custom
+      width: 242
+      zIndex: 0
+    - data:
+        classes:
+        - id: '1'
+          label: Current
+          name: '用户询问当前、现在、现行、最新、生效中的财务制度、差旅规则、报销规则、费用规则。
+
+
+            用户询问当前、现在、现行、最新规则，
+
+            或明确日期落在当前生效版本的有效期间内。
+
+
+            以下情况也默认属于 Current：
+
+            - 没有明确说明时间
+
+            - “现在”
+
+            - “目前”
+
+            - “当前”
+
+            - “最新”
+
+            - “现行”
+
+            - “现在规定”
+
+            - 普通问题没有历史语义
+
+
+            例如：
+
+            “现在一线城市住宿标准是多少？”
+
+            “电子发票可以报销吗？”
+
+            “出差回来多久要报销？”
+
+            “2026年5月1日一线城市住宿标准是多少？”'
+        - id: '2'
+          label: Historical
+          name: '用户明确询问过去、历史、旧版或特定历史时间的财务制度。
+
+
+            1. 用户明确询问过去、以前、旧版、历史规则；
+
+            2. 用户提供了明确历史日期，且该日期早于当前版本生效日期；
+
+            3. 查询日期落在已失效版本的有效期间内；
+
+            4. 不能仅根据“年份较近”判断为 Current，必须结合问题中的具体日期判断。
+
+
+            出现以下语义优先判断为 Historical：
+
+            - 以前
+
+            - 之前
+
+            - 过去
+
+            - 旧版
+
+            - 老版本
+
+            - 历史
+
+            - 当时
+
+            - 某个过去年份，如2025年、2024年
+
+            - V1.0、V2.0等明确旧版本
+
+            - “以前规定”
+
+            - “旧制度”
+
+
+            例如：
+
+            “2025年一线城市住宿标准是多少？”
+
+            “以前出差多久内报销？”
+
+            “旧版差旅制度怎么规定？”
+
+            “2026年4月30日一线城市住宿标准是多少？” '
+        model:
+          completion_params:
+            temperature: 0.7
+          mode: chat
+          name: glm-4.7-flash
+          provider: langgenius/zhipuai/zhipuai
+        query_variable_selector:
+        - sys
+        - query
+        selected: false
+        title: Finance_Version_Classifier
+        type: question-classifier
+        vision:
+          enabled: false
+      height: 177
+      id: '1788167244974'
+      position:
+        x: 589.5218637815825
+        y: -790.3953370875951
+      positionAbsolute:
+        x: 589.5218637815825
+        y: -790.3953370875951
+      selected: false
+      sourcePosition: right
+      targetPosition: left
+      type: custom
+      width: 242
+      zIndex: 0
+    - data:
+        dataset_ids:
+        - BqVqFxTz7cqKTxo7Ij8FDsjS6TxEb4M/p8P27Wbu+CBAiakPDEVQkDvN2MaGmyD6
+        multiple_retrieval_config:
+          reranking_enable: false
+          reranking_mode: weighted_score
+          reranking_model:
+            model: qwen3-rerank
+            provider: langgenius/tongyi/tongyi
+          score_threshold: null
+          top_k: 5
+          weights:
+            keyword_setting:
+              keyword_weight: 0.3
+            vector_setting:
+              embedding_model_name: '@cf/baai/bge-m3'
+              embedding_provider_name: langgenius/openai_api_compatible/openai_api_compatible
+              vector_weight: 0.7
+            weight_type: customized
+        query_attachment_selector: []
+        query_variable_selector:
+        - sys
+        - query
+        retrieval_mode: multiple
+        selected: false
+        title: KR_FINANCE_HISTORY
+        type: knowledge-retrieval
+      height: 89
+      id: '1788167696813'
+      position:
+        x: 939.4961625572288
+        y: -563.9998400627333
+      positionAbsolute:
+        x: 939.4961625572288
+        y: -563.9998400627333
+      selected: false
+      sourcePosition: right
+      targetPosition: left
+      type: custom
+      width: 242
+      zIndex: 0
+    - data:
+        context:
+          enabled: true
+          variable_selector:
+          - '1788167696813'
+          - result
+        desc: ''
+        isInIteration: false
+        isInLoop: false
+        memory:
+          query_prompt_template: '用户问题：
+
+            {{#sys.query#}}
+
+            请严格依据知识库上下文回答。'
+          role_prefix:
+            assistant: ''
+            user: ''
+          window:
+            enabled: false
+            size: 50
+        model:
+          completion_params:
+            temperature: 0.7
+          mode: chat
+          name: glm-4.7-flash
+          provider: langgenius/zhipuai/zhipuai
+        prompt_template:
+        - id: 7d983629-644f-491a-a120-d571f4420517
+          role: system
+          text: "你是 KnowFlow 企业内部知识可信问答助手。\n\n你的任务是严格根据提供的企业内部知识库上下文回答用户问题。\n\n【企业知识库上下文】\n\
+            \n{{#context#}}\n\n【回答规则】\n\n1. 企业制度、费用、流程和规则类信息只能依据上述知识库上下文回答。\n2. 不允许使用外部常识补充或猜测企业内部规则。\n\
+            3. 如果上述知识库上下文中存在能够直接或间接支持问题的内容，应优先依据该内容回答。\n4. 如果知识库上下文中没有足够依据，明确回答：\n\
+            \   “当前知识库中没有找到足够可靠的依据支持这个问题。”\n5. 不得编造金额、日期、制度名称、审批流程或其他企业内部信息。\n6. 优先使用标记为“当前生效”的制度或\
+            \ FAQ。\n7. 回答简洁、明确，先给结论，再给必要说明。\n8. 如果答案存在条件限制，必须一并说明，不能只给部分结论。\n\n回答格式：\n\
+            \n【答案】\n直接回答问题。\n\n【依据】\n简要说明依据的制度、FAQ 或关键规则。\n\n如果证据不足，则输出：\n\n【暂无法确认】\n\
+            当前知识库中没有找到足够可靠的依据支持这个问题，我不会基于猜测生成企业内部规则。\n\n当前分支用于回答历史版本制度问题。\n必须以当前提供的历史知识库上下文为准，\n\
+            不得自动替换成现行制度。\n如果用户询问的是当前规则，但当前分支只有历史资料，应明确提示。"
+        selected: false
+        title: Answer_FINANCE_HISTORY
+        type: llm
+        vision:
+          enabled: false
+      height: 87
+      id: '17881677472210'
+      position:
+        x: 1245.0067992120435
+        y: -551.0871917273951
+      positionAbsolute:
+        x: 1245.0067992120435
+        y: -551.0871917273951
+      selected: false
+      sourcePosition: right
+      targetPosition: left
+      type: custom
+      width: 242
+      zIndex: 0
+    - data:
+        answer: '{{#17881677472210.text#}}'
+        desc: ''
+        isInIteration: false
+        isInLoop: false
+        selected: false
+        title: Final_FINANCE_HISTORY
+        type: answer
+        variables: []
+      height: 101
+      id: '17881678263900'
+      position:
+        x: 1532.5421707185105
+        y: -557.0354355563643
+      positionAbsolute:
+        x: 1532.5421707185105
+        y: -557.0354355563643
+      selected: false
+      sourcePosition: right
+      targetPosition: left
+      type: custom
+      width: 242
+      zIndex: 0
+    - data:
+        classes:
+        - id: '1'
+          label: Current
+          name: '用户询问现在、当前、现行、最新的人事制度；
+
+            没有明确历史时间时默认 Current。'
+        - id: '2'
+          label: Historical
+          name: '用户询问以前、过去、旧版、历史、2025年、
+
+            V1.0等旧版人事制度时属于 Historical。'
+        desc: ''
+        isInIteration: false
+        isInLoop: false
+        model:
+          completion_params:
+            temperature: 0.7
+          mode: chat
+          name: glm-4.7-flash
+          provider: langgenius/zhipuai/zhipuai
+        query_variable_selector:
+        - sys
+        - query
+        selected: false
+        title: HR_Version_Classifier
+        type: question-classifier
+        vision:
+          enabled: false
+      height: 177
+      id: '17881703703610'
+      position:
+        x: 601.8431526934537
+        y: -1314.5621315700557
+      positionAbsolute:
+        x: 601.8431526934537
+        y: -1314.5621315700557
+      selected: false
+      sourcePosition: right
+      targetPosition: left
+      type: custom
+      width: 242
+      zIndex: 0
+    - data:
+        dataset_ids:
+        - a4zd8E9SGGb1LEZw2JiwO1/4QkWxKFUsdaCla/zfagl4A63uD7wKRuiidrVfyb/5
+        desc: ''
+        isInIteration: false
+        isInLoop: false
+        multiple_retrieval_config:
+          reranking_enable: false
+          reranking_mode: weighted_score
+          reranking_model:
+            model: gte-rerank-v2
+            provider: langgenius/tongyi/tongyi
+          score_threshold: null
+          top_k: 5
+          weights:
+            keyword_setting:
+              keyword_weight: 0.3
+            vector_setting:
+              embedding_model_name: '@cf/baai/bge-m3'
+              embedding_provider_name: langgenius/openai_api_compatible/openai_api_compatible
+              vector_weight: 0.7
+            weight_type: customized
+        query_attachment_selector: []
+        query_variable_selector:
+        - sys
+        - query
+        retrieval_mode: multiple
+        selected: false
+        title: KR_HR_HISTORY
+        type: knowledge-retrieval
+      height: 89
+      id: '17881705402320'
+      position:
+        x: 959.2887812188225
+        y: -1124.5293738862822
+      positionAbsolute:
+        x: 959.2887812188225
+        y: -1124.5293738862822
+      selected: false
+      sourcePosition: right
+      targetPosition: left
+      type: custom
+      width: 242
+      zIndex: 0
+    - data:
+        context:
+          enabled: true
+          variable_selector:
+          - '17881705402320'
+          - result
+        desc: ''
+        isInIteration: false
+        isInLoop: false
+        memory:
+          query_prompt_template: '用户问题：
+
+            {{#sys.query#}}
+
+            请严格依据知识库上下文回答。'
+          role_prefix:
+            assistant: ''
+            user: ''
+          window:
+            enabled: false
+            size: 50
+        model:
+          completion_params:
+            temperature: 0.7
+          mode: chat
+          name: glm-4.7-flash
+          provider: langgenius/zhipuai/zhipuai
+        prompt_template:
+        - id: 7d983629-644f-491a-a120-d571f4420517
+          role: system
+          text: "你是 KnowFlow 企业内部知识可信问答助手。\n\n你的任务是严格根据提供的企业内部知识库上下文回答用户问题。\n\n【企业知识库上下文】\n\
+            \n{{#context#}}\n\n【回答规则】\n\n1. 企业制度、费用、流程和规则类信息只能依据上述知识库上下文回答。\n2. 不允许使用外部常识补充或猜测企业内部规则。\n\
+            3. 如果上述知识库上下文中存在能够直接或间接支持问题的内容，应优先依据该内容回答。\n4. 如果知识库上下文中没有足够依据，明确回答：\n\
+            \   “当前知识库中没有找到足够可靠的依据支持这个问题。”\n5. 不得编造金额、日期、制度名称、审批流程或其他企业内部信息。\n6. 优先使用标记为“当前生效”的制度或\
+            \ FAQ。\n7. 回答简洁、明确，先给结论，再给必要说明。\n8. 如果答案存在条件限制，必须一并说明，不能只给部分结论。\n\n回答格式：\n\
+            \n【答案】\n直接回答问题。\n\n【依据】\n简要说明依据的制度、FAQ 或关键规则。\n\n如果证据不足，则输出：\n\n【暂无法确认】\n\
+            当前知识库中没有找到足够可靠的依据支持这个问题，我不会基于猜测生成企业内部规则。"
+        selected: false
+        title: Answer_HR_HISTORY
+        type: llm
+        vision:
+          enabled: false
+      height: 87
+      id: '17881705442100'
+      position:
+        x: 1269.0423947056743
+        y: -1124.5293738862822
+      positionAbsolute:
+        x: 1269.0423947056743
+        y: -1124.5293738862822
+      selected: false
+      sourcePosition: right
+      targetPosition: left
+      type: custom
+      width: 242
+      zIndex: 0
+    - data:
+        answer: '{{#17881705442100.text#}}'
+        desc: ''
+        isInIteration: false
+        isInLoop: false
+        selected: false
+        title: Final_HR_HISTORY
+        type: answer
+        variables: []
+      height: 101
+      id: '17881705485330'
+      position:
+        x: 1559.6498259482778
+        y: -1117.5649693799132
+      positionAbsolute:
+        x: 1559.6498259482778
+        y: -1117.5649693799132
+      selected: false
+      sourcePosition: right
+      targetPosition: left
+      type: custom
+      width: 242
+      zIndex: 0
+    - data:
+        classes:
+        - id: '1'
+          label: Current
+          name: '【版本判定优先级】
+
+
+            必须按以下顺序判断：
+
+
+            第一优先级：Comparison
+
+            如果用户明确要求比较当前与历史、新版与旧版、现在与以前的差异，
+
+            无论问题中是否出现“现在”“旧版”“2025”等词，都选择 Comparison。
+
+
+            第二优先级：Historical
+
+            如果用户明确给出了过去的年份、日期或历史时间范围，
+
+            并且问题不是版本比较，则选择 Historical。
+
+
+            历史时间表达包括但不限于：
+
+            - 2025年
+
+            - 去年
+
+            - 当时
+
+            - 以前
+
+            - 旧版
+
+            - 历史规则
+
+            - 某个已经过去的具体日期
+
+
+            即使问题中还包含具体业务条件，
+
+            例如付款天数、使用次数、退款条件等，
+
+            只要用户明确指定历史时间，也必须优先进入 Historical。
+
+
+            第三优先级：Current
+
+            只有在：
+
+            - 用户明确说现在、当前、现行、最新版；
+
+            或
+
+            - 用户没有给出任何历史时间限定，
+
+            才选择 Current。
+
+
+            用户询问产品A当前、现在、现行、最新、生效中的退款规则、取消规则、订阅规则或产品政策。
+
+
+            以下情况默认判断为 Current：
+
+            - 没有明确说明历史时间
+
+            - 出现“现在”
+
+            - “目前”
+
+            - “当前”
+
+            - “最新”
+
+            - “现行”
+
+            - “现在退款规则”
+
+            - “现在还能不能退”
+
+            - 普通产品规则问题没有历史语义
+
+
+            例如：
+
+            “现在产品A退款规则是多少天？”
+
+            “产品A付款10天后还能退款吗？”
+
+            “现在产品A使用2次还能申请退款吗？”
+
+            “产品A当前退款条件是什么？”
+
+            “现在产品A退款规则是多少？”
+
+
+            反例：
+
+            “产品A付款10天，核心付费功能用了2次，可以退款吗？”
+
+
+            若用户明确要求与旧版、历史版本进行比较，不属于 Current，应进入 Comparison。'
+        - id: '2'
+          label: Historical
+          name: '【版本判定优先级】
+
+
+            必须按以下顺序判断：
+
+
+            第一优先级：Comparison
+
+            如果用户明确要求比较当前与历史、新版与旧版、现在与以前的差异，
+
+            无论问题中是否出现“现在”“旧版”“2025”等词，都选择 Comparison。
+
+
+            第二优先级：Historical
+
+            如果用户明确给出了过去的年份、日期或历史时间范围，
+
+            并且问题不是版本比较，则选择 Historical。
+
+
+            历史时间表达包括但不限于：
+
+            - 2025年
+
+            - 去年
+
+            - 当时
+
+            - 以前
+
+            - 旧版
+
+            - 历史规则
+
+            - 某个已经过去的具体日期
+
+
+            即使问题中还包含具体业务条件，
+
+            例如付款天数、使用次数、退款条件等，
+
+            只要用户明确指定历史时间，也必须优先进入 Historical。
+
+
+            第三优先级：Current
+
+            只有在：
+
+            - 用户明确说现在、当前、现行、最新版；
+
+            或
+
+            - 用户没有给出任何历史时间限定，
+
+            才选择 Current。
+
+
+            用户明确询问产品A过去、历史、旧版、老版本或特定历史时期的退款规则、取消规则、订阅规则或产品政策。
+
+
+            出现以下语义时优先判断为 Historical：
+
+            - 以前
+
+            - 之前
+
+            - 过去
+
+            - 旧版
+
+            - 老版本
+
+            - 历史
+
+            - 当时
+
+            - 某个过去年份，如2025年
+
+            - V1.0
+
+            - 旧退款规则
+
+            - 旧制度
+
+            - 以前怎么规定
+
+
+            例如：
+
+            “旧版产品A退款规则是多少天？”
+
+            “2025年产品A退款规则是什么？”
+
+            “以前产品A付款几天内可以退款？”
+
+            “产品A V1.0退款条件是什么？”
+
+            “2025年产品A退款规则是多少天？”
+
+            “2025年产品A付款5天但已经使用核心功能，可以退款吗？”
+
+
+            若用户明确要求与当前版本进行比较，不属于 Historical，应进入 Comparison。'
+        - id: '1788403227913'
+          label: Comparison
+          name: '【版本判定优先级】
+
+
+            必须按以下顺序判断：
+
+
+            第一优先级：Comparison
+
+            如果用户明确要求比较当前与历史、新版与旧版、现在与以前的差异，
+
+            无论问题中是否出现“现在”“旧版”“2025”等词，都选择 Comparison。
+
+
+            第二优先级：Historical
+
+            如果用户明确给出了过去的年份、日期或历史时间范围，
+
+            并且问题不是版本比较，则选择 Historical。
+
+
+            历史时间表达包括但不限于：
+
+            - 2025年
+
+            - 去年
+
+            - 当时
+
+            - 以前
+
+            - 旧版
+
+            - 历史规则
+
+            - 某个已经过去的具体日期
+
+
+            即使问题中还包含具体业务条件，
+
+            例如付款天数、使用次数、退款条件等，
+
+            只要用户明确指定历史时间，也必须优先进入 Historical。
+
+
+            第三优先级：Current
+
+            只有在：
+
+            - 用户明确说现在、当前、现行、最新版；
+
+            或
+
+            - 用户没有给出任何历史时间限定，
+
+            才选择 Current。
+
+
+            当用户明确要求比较当前规则与历史规则、新版与旧版、现行规则与以前版本之间的差异时，选择该分类。
+
+
+            典型表达包括但不限于：
+
+            - 现在和以前有什么区别？
+
+            - 新版和旧版有什么不同？
+
+            - 当前规则相比旧版改了什么？
+
+            - 现在产品A退款规则和旧版有什么不同？
+
+            - 2026版和2025版相比有什么变化？
+
+
+            注意：
+
+            只要用户明确要求“比较两个版本”，就不能路由到单独的 Current 或 Historical。'
+        desc: ''
+        isInIteration: false
+        isInLoop: false
+        model:
+          completion_params:
+            temperature: 0.7
+          mode: chat
+          name: glm-4.7-flash
+          provider: langgenius/zhipuai/zhipuai
+        query_variable_selector:
+        - sys
+        - query
+        selected: false
+        title: Product_Version_Classifier
+        type: question-classifier
+        vision:
+          enabled: false
+      height: 219
+      id: '17881714759680'
+      position:
+        x: 589.5218637815825
+        y: -44.876131679738506
+      positionAbsolute:
+        x: 589.5218637815825
+        y: -44.876131679738506
+      selected: false
+      sourcePosition: right
+      targetPosition: left
+      type: custom
+      width: 242
+      zIndex: 0
+    - data:
+        dataset_ids:
+        - X9RQWk6rX1GO+XKx32HHbNK4YmWGit+yAFMyL15DP1Vy8nOIFfu0rN8NhOGedCMr
+        desc: ''
+        isInIteration: false
+        isInLoop: false
+        multiple_retrieval_config:
+          reranking_enable: false
+          reranking_mode: weighted_score
+          reranking_model:
+            model: qwen3-rerank
+            provider: langgenius/tongyi/tongyi
+          score_threshold: null
+          top_k: 5
+          weights:
+            keyword_setting:
+              keyword_weight: 0.3
+            vector_setting:
+              embedding_model_name: '@cf/baai/bge-m3'
+              embedding_provider_name: langgenius/openai_api_compatible/openai_api_compatible
+              vector_weight: 0.7
+            weight_type: customized
+        query_attachment_selector: []
+        query_variable_selector:
+        - sys
+        - query
+        retrieval_mode: multiple
+        selected: false
+        title: KR_PRODUCT_HISTORY
+        type: knowledge-retrieval
+      height: 89
+      id: '17881715439040'
+      position:
+        x: 939.4961625572288
+        y: 71.82163492595743
+      positionAbsolute:
+        x: 939.4961625572288
+        y: 71.82163492595743
+      selected: false
+      sourcePosition: right
+      targetPosition: left
+      type: custom
+      width: 242
+      zIndex: 0
+    - data:
+        context:
+          enabled: true
+          variable_selector:
+          - '17881715439040'
+          - result
+        desc: ''
+        isInIteration: false
+        isInLoop: false
+        memory:
+          query_prompt_template: '用户问题：
+
+            {{#sys.query#}}
+
+            请严格依据知识库上下文回答。'
+          role_prefix:
+            assistant: ''
+            user: ''
+          window:
+            enabled: false
+            size: 50
+        model:
+          completion_params:
+            temperature: 0.7
+          mode: chat
+          name: glm-4.7-flash
+          provider: langgenius/zhipuai/zhipuai
+        prompt_template:
+        - id: 7d983629-644f-491a-a120-d571f4420517
+          role: system
+          text: "你是 KnowFlow 企业内部知识可信问答助手。\n\n你的任务是严格根据提供的企业内部知识库上下文回答用户问题。\n\n【企业知识库上下文】\n\
+            \n{{#context#}}\n\n【回答规则】\n\n1. 企业制度、费用、流程和规则类信息只能依据上述知识库上下文回答。\n2. 不允许使用外部常识补充或猜测企业内部规则。\n\
+            3. 如果上述知识库上下文中存在能够直接或间接支持问题的内容，应优先依据该内容回答。\n4. 如果知识库上下文中没有足够依据，明确回答：\n\
+            \   “当前知识库中没有找到足够可靠的依据支持这个问题。”\n5. 不得编造金额、日期、制度名称、审批流程或其他企业内部信息。\n6. 优先使用标记为“当前生效”的制度或\
+            \ FAQ。\n7. 回答简洁、明确，先给结论，再给必要说明。\n8. 如果答案存在条件限制，必须一并说明，不能只给部分结论。\n\n回答格式：\n\
+            \n【答案】\n直接回答问题。\n\n【依据】\n简要说明依据的制度、FAQ 或关键规则。\n\n如果证据不足，则输出：\n\n【暂无法确认】\n\
+            当前知识库中没有找到足够可靠的依据支持这个问题，我不会基于猜测生成企业内部规则。\n\n当前分支专门用于回答产品A历史版本规则。\n必须依据提供的历史知识库上下文回答，不得自动使用当前版本规则替代历史规则。\n\
+            如果历史知识库中没有足够依据，应明确拒答。"
+        selected: false
+        title: Answer_PRODUCT_HISTORY
+        type: llm
+        vision:
+          enabled: false
+      height: 87
+      id: '17881715511460'
+      position:
+        x: 1225.21418055045
+        y: 80.96357875414395
+      positionAbsolute:
+        x: 1225.21418055045
+        y: 80.96357875414395
+      selected: false
+      sourcePosition: right
+      targetPosition: left
+      type: custom
+      width: 242
+      zIndex: 0
+    - data:
+        answer: '{{#17881715511460.text#}}'
+        desc: ''
+        isInIteration: false
+        isInLoop: false
+        selected: false
+        title: Final_PRODUCT_HISTORY
+        type: answer
+        variables: []
+      height: 101
+      id: '17881715576400'
+      position:
+        x: 1506.1520125030527
+        y: 87.08039769957504
+      positionAbsolute:
+        x: 1506.1520125030527
+        y: 87.08039769957504
+      selected: false
+      sourcePosition: right
+      targetPosition: left
+      type: custom
+      width: 242
+      zIndex: 0
+    - data:
+        classes:
+        - id: '1'
+          label: Normal
+          name: '用户询问普通财务公开知识，包括：
+
+            - 差旅
+
+            - 住宿
+
+            - 交通
+
+            - 餐补
+
+            - 报销
+
+            - 发票
+
+            - 常规费用规则
+
+            - 普通财务FAQ
+
+            - 差旅历史规则
+
+
+            以下问题属于 Normal：
+
+            “出差住宿上限是多少？”
+
+            “电子发票可以报销吗？”
+
+            “出差多久内提交报销？”
+
+            “2025年住宿标准是多少？”'
+        - id: '2'
+          label: Restricted
+          name: '用户询问受限财务管理信息，包括：
+
+            - 年度预算调整
+
+            - 预算审批权限
+
+            - 预算调整金额阈值
+
+            - 财务管理层审批规则
+
+            - CEO审批条件
+
+            - 部门预算调整
+
+            - 受限预算制度
+
+            - 财务内部管理权限
+
+
+            以下问题属于 Restricted：
+
+            “预算调整超过10万元谁审批？”
+
+            “2万元以内预算调整谁审批？”
+
+            “预算调整审批链是什么？”
+
+            “年度预算怎么调整？”'
+        model:
+          completion_params:
+            temperature: 0.7
+          mode: chat
+          name: glm-4.7-flash
+          provider: langgenius/zhipuai/zhipuai
+        query_variable_selector:
+        - sys
+        - query
+        selected: false
+        title: Finance_Sensitivity_Classifier
+        type: question-classifier
+        vision:
+          enabled: false
+      height: 177
+      id: '1788230827886'
+      position:
+        x: 269.3332306804631
+        y: -659.700547881687
+      positionAbsolute:
+        x: 269.3332306804631
+        y: -659.700547881687
+      selected: false
+      sourcePosition: right
+      targetPosition: left
+      type: custom
+      width: 242
+      zIndex: 0
+    - data:
+        cases:
+        - case_id: 'true'
+          conditions:
+          - comparison_operator: is
+            id: 7f52c2d0-ac22-4023-9886-cdfab3794fc5
+            value: finance_manager
+            varType: string
+            variable_selector:
+            - '1787905964188'
+            - user_role
+          id: 'true'
+          logical_operator: and
+        - case_id: 2f6485ad-ca80-4c4b-bf89-a14dfed54024
+          conditions:
+          - comparison_operator: is
+            id: 7a0be226-8fcb-4c54-879a-e70d18af59a9
+            value: admin
+            varType: string
+            variable_selector:
+            - '1787905964188'
+            - user_role
+          id: 2f6485ad-ca80-4c4b-bf89-a14dfed54024
+          logical_operator: and
+        selected: false
+        title: Finance_Role_Check
+        type: if-else
+      height: 219
+      id: '1788230987381'
+      position:
+        x: 589.5218637815825
+        y: -414.85748948657516
+      positionAbsolute:
+        x: 589.5218637815825
+        y: -414.85748948657516
+      selected: true
+      sourcePosition: right
+      targetPosition: left
+      type: custom
+      width: 242
+      zIndex: 0
+    - data:
+        dataset_ids:
+        - 0B1EcAY+uCc1o0Hbnz+3l1Ec4I2j7r/UAZoKkxNHvUDNWanhQpOq1U57aYs8dmPb
+        multiple_retrieval_config:
+          reranking_enable: false
+          reranking_mode: weighted_score
+          reranking_model:
+            model: qwen3-rerank
+            provider: langgenius/tongyi/tongyi
+          score_threshold: null
+          top_k: 5
+          weights:
+            keyword_setting:
+              keyword_weight: 0.3
+            vector_setting:
+              embedding_model_name: '@cf/baai/bge-m3'
+              embedding_provider_name: langgenius/openai_api_compatible/openai_api_compatible
+              vector_weight: 0.7
+            weight_type: customized
+        query_attachment_selector: []
+        query_variable_selector:
+        - sys
+        - query
+        retrieval_mode: multiple
+        selected: false
+        title: KR_FINANCE_PRIVATE
+        type: knowledge-retrieval
+      height: 89
+      id: '1788231762639'
+      position:
+        x: 939.4961625572288
+        y: -385.20868915904174
+      positionAbsolute:
+        x: 939.4961625572288
+        y: -385.20868915904174
+      selected: false
+      sourcePosition: right
+      targetPosition: left
+      type: custom
+      width: 242
+      zIndex: 0
+    - data:
+        context:
+          enabled: true
+          variable_selector:
+          - '1788231762639'
+          - result
+        desc: ''
+        isInIteration: false
+        isInLoop: false
+        memory:
+          query_prompt_template: '用户问题：
+
+            {{#sys.query#}}
+
+            请严格依据知识库上下文回答。'
+          role_prefix:
+            assistant: ''
+            user: ''
+          window:
+            enabled: false
+            size: 50
+        model:
+          completion_params:
+            temperature: 0.7
+          mode: chat
+          name: glm-4.7-flash
+          provider: langgenius/zhipuai/zhipuai
+        prompt_template:
+        - id: 7d983629-644f-491a-a120-d571f4420517
+          role: system
+          text: "你是 KnowFlow 企业内部知识可信问答助手。\n\n你的任务是严格根据提供的企业内部知识库上下文回答用户问题。\n\n【企业知识库上下文】\n\
+            \n{{#context#}}\n\n【回答规则】\n\n1. 企业制度、费用、流程和规则类信息只能依据上述知识库上下文回答。\n2. 不允许使用外部常识补充或猜测企业内部规则。\n\
+            3. 如果上述知识库上下文中存在能够直接或间接支持问题的内容，应优先依据该内容回答。\n4. 如果知识库上下文中没有足够依据，明确回答：\n\
+            \   “当前知识库中没有找到足够可靠的依据支持这个问题。”\n5. 不得编造金额、日期、制度名称、审批流程或其他企业内部信息。\n6. 优先使用标记为“当前生效”的制度或\
+            \ FAQ。\n7. 回答简洁、明确，先给结论，再给必要说明。\n8. 如果答案存在条件限制，必须一并说明，不能只给部分结论。\n\n回答格式：\n\
+            \n【答案】\n直接回答问题。\n\n【依据】\n简要说明依据的制度、FAQ 或关键规则。\n\n如果证据不足，则输出：\n\n【暂无法确认】\n\
+            当前知识库中没有找到足够可靠的依据支持这个问题，我不会基于猜测生成企业内部规则。\n\n当前分支只用于回答已通过权限校验的受限财务知识。\n\
+            \n必须严格依据提供的受限知识库上下文回答。\n不得向用户额外推断或扩展其他受限信息。"
+        selected: false
+        title: Answer_FINANCE_PRIVATE
+        type: llm
+        vision:
+          enabled: false
+      height: 87
+      id: '17882319073340'
+      position:
+        x: 1245.0067992120435
+        y: -390.06512758631396
+      positionAbsolute:
+        x: 1245.0067992120435
+        y: -390.06512758631396
+      selected: false
+      sourcePosition: right
+      targetPosition: left
+      type: custom
+      width: 242
+      zIndex: 0
+    - data:
+        answer: '{{#17882319073340.text#}}'
+        desc: ''
+        isInIteration: false
+        isInLoop: false
+        selected: false
+        title: Final_FINANCE_PRIVATE
+        type: answer
+        variables: []
+      height: 101
+      id: '17882319729050'
+      position:
+        x: 1532.5421707185105
+        y: -390.06512758631396
+      positionAbsolute:
+        x: 1532.5421707185105
+        y: -390.06512758631396
+      selected: false
+      sourcePosition: right
+      targetPosition: left
+      type: custom
+      width: 242
+      zIndex: 0
+    - data:
+        answer: '【无访问权限】
+
+
+          该问题可能涉及受限财务知识。
+
+
+          当前账号没有访问对应知识范围的权限，因此系统不会检索或展示相关受限资料的：
+
+
+          - 文档名称
+
+          - 具体金额阈值
+
+          - 审批链
+
+          - 原文内容
+
+          - 摘要信息
+
+
+          如确有业务需要，请通过企业权限流程申请访问。'
+        selected: false
+        title: Finance_No_Access
+        type: answer
+        variables: []
+      height: 195
+      id: '1788232132145'
+      position:
+        x: 939.4961625572288
+        y: -273.7875821760225
+      positionAbsolute:
+        x: 939.4961625572288
+        y: -273.7875821760225
+      selected: false
+      sourcePosition: right
+      targetPosition: left
+      type: custom
+      width: 242
+      zIndex: 0
+    - data:
+        dataset_ids:
+        - Z7jf9jqq6ewSYN9+IeAdkN7XknG5UKXmBPXJokWSRrzMBNX1Bht1vOQtvn4YOPRy
+        - aNn5bV0cnzLKzQ2TsX7xaTD23yH4V01lENmo0tcrvK5iPq1ahXEboMSapRLyATyg
+        multiple_retrieval_config:
+          reranking_enable: false
+          reranking_mode: weighted_score
+          reranking_model:
+            model: qwen3-rerank
+            provider: langgenius/tongyi/tongyi
+          score_threshold: null
+          top_k: 5
+          weights:
+            keyword_setting:
+              keyword_weight: 0.3
+            vector_setting:
+              embedding_model_name: '@cf/baai/bge-m3'
+              embedding_provider_name: langgenius/openai_api_compatible/openai_api_compatible
+              vector_weight: 0.7
+            weight_type: customized
+        query_attachment_selector: []
+        query_variable_selector:
+        - sys
+        - query
+        retrieval_mode: multiple
+        selected: false
+        title: KR_FINANCE_CURRENT_CHECK
+        type: knowledge-retrieval
+      height: 117
+      id: '1788233597400'
+      position:
+        x: 959.2887812188225
+        y: -899.5650556291214
+      positionAbsolute:
+        x: 959.2887812188225
+        y: -899.5650556291214
+      selected: false
+      sourcePosition: right
+      targetPosition: left
+      type: custom
+      width: 242
+      zIndex: 0
+    - data:
+        context:
+          enabled: true
+          variable_selector:
+          - '1788233597400'
+          - result
+        memory:
+          query_prompt_template: '用户问题：
+
+            {{#sys.query#}}
+
+
+            请判断当前知识证据应进入 answer、clarify、conflict 或 refuse 中的哪一种状态。
+
+            '
+          role_prefix:
+            assistant: ''
+            user: ''
+          window:
+            enabled: false
+            size: 50
+        model:
+          completion_params:
+            temperature: 0.7
+          mode: chat
+          name: glm-4.7-flash
+          provider: langgenius/zhipuai/zhipuai
+        prompt_template:
+        - id: b32d3e4c-3880-4719-b665-dd6781e4a5e5
+          role: system
+          text: '你是 KnowFlow 企业财务知识证据审核器。
+
+
+            你的任务不是直接回答用户问题，
+
+            而是仅依据提供的企业知识库证据 {{#context#}}，
+
+            判断当前用户问题应该进入哪一种处理状态：
+
+
+            - answer
+
+            - clarify
+
+            - conflict
+
+            - refuse
+
+
+            你必须同时判断：
+
+
+            1. 用户问题询问的业务对象是什么；
+
+            2. 用户询问的是哪个时间点或时间范围；
+
+            3. 每份知识证据在该时间点是否有效；
+
+            4. 用户是否缺少决定规则适用范围的必要条件；
+
+            5. 有效证据之间是否存在真正冲突；
+
+            6. 是否存在足够证据支持明确回答。
+
+
+            禁止使用外部常识补充企业内部制度。
+
+            禁止自行判断哪份企业文件“更权威”。
+
+            禁止使用在用户询问时间点尚未生效或已经失效的规则回答。
+
+
+
+            ==================================================
+
+            一、decision 输出值
+
+            ==================================================
+
+
+            decision 只能是以下四个值之一：
+
+
+            answer
+
+
+            clarify
+
+
+            conflict
+
+
+            refuse
+
+
+
+            ==================================================
+
+            二、强制决策顺序
+
+            ==================================================
+
+
+            必须严格按照以下顺序判断：
+
+
+            第一步：识别用户询问的目标事实。
+
+
+            第二步：确定 query_date 或 query_period。
+
+
+            第三步：对每份证据进行时间有效性过滤。
+
+
+            第四步：检查用户问题是否缺少会改变答案的必要条件。
+
+
+            第五步：仅在“时间上有效且适用范围匹配”的证据之间检查 conflict。
+
+
+            第六步：判断 answer 或 refuse。
+
+
+            不得跳过时间有效性过滤直接判断 conflict。
+
+
+
+            ==================================================
+
+            三、第一步：识别用户的目标事实
+
+            ==================================================
+
+
+            先识别用户真正询问的是什么。
+
+
+            例如：
+
+
+            “现在一线城市出差住宿上限是多少？”
+
+            目标事实：
+
+            当前一线城市住宿标准。
+
+
+            “2025年一线城市出差住宿上限是多少？”
+
+            目标事实：
+
+            2025年适用的一线城市住宿标准。
+
+
+            “2026年4月30日一线城市住宿标准是多少？”
+
+            目标事实：
+
+            2026年4月30日当天适用的一线城市住宿标准。
+
+
+            “北上广深出差住宿最多能报多少？”
+
+            目标事实：
+
+            北上广深对应住宿上限。
+
+
+            “出差住宿能报多少？”
+
+            目标事实：
+
+            住宿报销标准，
+
+            但城市或城市级别可能属于必要条件。
+
+
+
+            ==================================================
+
+            四、第二步：确定 query_date
+
+            ==================================================
+
+
+            必须优先从用户问题中提取时间。
+
+
+            时间分为以下类型：
+
+
+            A. explicit_date
+
+
+            用户明确给出具体日期，例如：
+
+
+            - 2026年4月30日
+
+            - 2026-05-01
+
+            - 2025年9月1日
+
+
+            此时：
+
+
+            query_date = 用户明确日期
+
+
+            不得使用系统当前日期代替。
+
+
+
+            B. explicit_period
+
+
+            用户明确给出年份或时间段，例如：
+
+
+            - 2025年
+
+            - 2025年底
+
+            - 去年
+
+            - 某制度生效期间
+
+
+            此时应判断用户询问时间范围，
+
+            只使用在该时间范围内有效的证据。
+
+
+
+            C. current_intent
+
+
+            用户使用：
+
+
+            - 现在
+
+            - 当前
+
+            - 目前
+
+            - 现行
+
+            - 最新
+
+
+            表示询问当前有效制度。
+
+
+            此时只允许使用当前有效证据。
+
+
+
+            D. no_time_expression
+
+
+            如果用户没有提及时间，
+
+            且上游已经将请求路由到 CURRENT 知识库，
+
+            则按当前规则判断。
+
+
+            如果用户明确询问历史规则，
+
+            则不得使用当前规则代替历史规则。
+
+
+
+            ==================================================
+
+            五、第三步：证据时间有效性过滤
+
+            ==================================================
+
+
+            这是最高优先级规则之一。
+
+
+            每份证据必须先判断：
+
+
+            该文件或规则在 query_date 是否有效。
+
+
+            如果证据包含：
+
+
+            effective_date
+
+            生效日期
+
+
+            expiry_date
+
+            失效日期
+
+
+            则按照以下规则判断。
+
+
+
+            --------------------------------------------------
+
+            1. 生效日期
+
+            --------------------------------------------------
+
+
+            规则只有在：
+
+
+            query_date >= effective_date
+
+
+            时才可以使用。
+
+
+            如果：
+
+
+            query_date < effective_date
+
+
+            则该证据属于：
+
+
+            future_evidence
+
+
+            必须排除。
+
+
+            不得用于：
+
+
+            - answer
+
+            - conflict
+
+            - clarify 的业务结论依据
+
+
+
+            例如：
+
+
+            文件A：
+
+
+            生效日期：2026年5月1日
+
+            住宿上限：600元
+
+
+            用户问：
+
+
+            “2026年4月30日一线城市住宿标准是多少？”
+
+
+            文件A在2026年4月30日尚未生效。
+
+
+            因此：
+
+
+            不得使用600元规则回答。
+
+            不得把它与当时有效的500元规则判断为冲突。
+
+
+
+            --------------------------------------------------
+
+            2. 失效日期
+
+            --------------------------------------------------
+
+
+            如果文件明确写明：
+
+
+            失效日期 = YYYY-MM-DD
+
+
+            则默认该日期仍属于有效期最后一天，
+
+            除非证据明确说明“自该日零时起失效”或其他排除规则。
+
+
+            即默认：
+
+
+            effective_date <= query_date <= expiry_date
+
+
+            均视为时间有效。
+
+
+            例如：
+
+
+            旧制度：
+
+
+            生效日期：2025年6月1日
+
+            失效日期：2026年4月30日
+
+
+            则：
+
+
+            2026年4月30日 → 旧制度仍有效
+
+
+            2026年5月1日 → 旧制度不再有效。
+
+
+
+            --------------------------------------------------
+
+            3. 新旧制度切换
+
+            --------------------------------------------------
+
+
+            例如：
+
+
+            旧制度：
+
+            有效期至 2026年4月30日
+
+            一线城市住宿标准：500元
+
+
+            新制度：
+
+            自 2026年5月1日起生效
+
+            一线城市住宿标准：600元
+
+
+            则必须判断：
+
+
+            用户问：
+
+            “2026年4月30日是多少？”
+
+
+            只能使用：
+
+            500元
+
+
+            用户问：
+
+            “2026年5月1日是多少？”
+
+
+            只能使用：
+
+            600元
+
+
+            此时不属于 conflict。
+
+
+            这是正常的版本切换。
+
+
+
+            --------------------------------------------------
+
+            4. 历史证据
+
+            --------------------------------------------------
+
+
+            已经失效的规则：
+
+
+            如果用户询问的 query_date 落在该规则历史有效期内，
+
+            则它仍然是该历史问题的有效证据。
+
+
+            因此：
+
+
+            “失效文件”不等于“永远不能使用”。
+
+
+            对于历史问题，
+
+            必须按用户询问日期判断其历史有效性。
+
+
+
+            例如：
+
+
+            文件：
+
+
+            V2.0
+
+            生效日期：2025年6月1日
+
+            失效日期：2026年4月30日
+
+            住宿标准：500元
+
+
+            用户问：
+
+
+            “2025年一线城市住宿标准是多少？”
+
+
+            如果用户询问的时间落在该制度有效期间，
+
+            该文件属于有效历史证据。
+
+
+
+            ==================================================
+
+            六、禁止跨时间污染
+
+            ==================================================
+
+
+            不得将不同时间阶段的规则当作同一时间点的冲突。
+
+
+            以下情况不是 conflict：
+
+
+            旧制度：
+
+            2025-06-01 至 2026-04-30
+
+            标准500元
+
+
+            新制度：
+
+            2026-05-01 起
+
+            标准600元
+
+
+            因为二者适用时间不同。
+
+
+            必须先按 query_date 过滤，
+
+            再判断冲突。
+
+
+            禁止：
+
+
+            因为知识库同时检索到500元和600元，
+
+            就直接输出 conflict。
+
+
+
+            ==================================================
+
+            七、真正的 conflict 判定
+
+            ==================================================
+
+
+            只有同时满足以下全部条件，
+
+            才能输出 conflict：
+
+
+            1. 至少两份证据都与用户问题直接相关；
+
+
+            2. 两份证据在 query_date 均处于有效状态；
+
+
+            3. 两份证据适用于同一业务对象；
+
+
+            4. 两份证据适用于同一城市、城市级别、费用类型或其他关键适用范围；
+
+
+            5. 两份证据针对同一个关键事实；
+
+
+            6. 两份证据给出互不一致的结论；
+
+
+            7. 不能通过生效日期、失效日期、版本周期、适用对象或其他明确条件解释差异。
+
+
+
+            例如：
+
+
+            用户问：
+
+
+            “现在北上广深住宿上限是多少？”
+
+
+            有效资料A：
+
+            当前有效
+
+            一线城市：500元
+
+
+            有效资料B：
+
+            当前有效
+
+            一线城市：600元
+
+
+            两份文件均在当前时间有效，
+
+            并针对同一对象、同一事实。
+
+
+            则：
+
+
+            decision = conflict
+
+
+
+            ==================================================
+
+            八、过期/未来证据不得制造 conflict
+
+            ==================================================
+
+
+            如果：
+
+
+            资料A在 query_date 有效
+
+
+            资料B在 query_date 尚未生效
+
+
+            则只使用资料A。
+
+
+            不得输出 conflict。
+
+
+
+            如果：
+
+
+            资料A在 query_date 已失效
+
+
+            资料B在 query_date 有效
+
+
+            则只使用资料B。
+
+
+            不得输出 conflict。
+
+
+
+            如果：
+
+
+            两份文件分别适用于不同历史时间段，
+
+
+            则不属于 conflict。
+
+
+
+            ==================================================
+
+            九、必要条件与 clarify
+
+            ==================================================
+
+
+            完成时间有效性过滤后，
+
+            再判断用户是否缺少业务必要条件。
+
+
+            clarify 只能在以下条件同时满足时使用：
+
+
+            1. 已找到时间上有效且与问题相关的规则；
+
+
+            2. 用户缺失某个必要条件；
+
+
+            3. 该条件的不同取值会导致不同答案。
+
+
+
+            必要条件可能包括：
+
+
+            - 城市
+
+            - 城市级别
+
+            - 费用类型
+
+            - 员工类型
+
+            - 金额区间
+
+            - 投诉等级
+
+            - 产品类型
+
+            - 业务对象
+
+            - 其他真正决定适用规则的条件
+
+
+
+            例如：
+
+
+            用户：
+
+
+            “出差住宿能报多少？”
+
+
+            证据：
+
+
+            一线城市600元
+
+            新一线/省会城市450元
+
+            其他城市350元
+
+
+            用户未提供城市。
+
+
+            不同城市会导致不同答案。
+
+
+            因此：
+
+
+            decision = clarify
+
+
+            clarifying_question：
+
+
+            “请问您出差的城市是哪里？”
+
+
+
+            ==================================================
+
+            十、不要过度澄清
+
+            ==================================================
+
+
+            只有缺失的信息会实质改变当前答案时，
+
+            才允许 clarify。
+
+
+            不得因为：
+
+
+            - 想获得更完整的信息
+
+            - 文档包含更多字段
+
+            - 用户未提供与结论无关的信息
+
+
+            而输出 clarify。
+
+
+            如果现有条件已经足以得到唯一答案，
+
+            必须 answer。
+
+
+
+            例如：
+
+
+            用户：
+
+
+            “北上广深出差住宿最多能报多少？”
+
+
+            用户已经明确了一线城市范围。
+
+
+            不得再追问具体是北京、上海、广州还是深圳，
+
+            如果这四个城市适用同一标准。
+
+
+
+            ==================================================
+
+            十一、时间条件是否需要澄清
+
+            ==================================================
+
+
+            如果用户明确说：
+
+
+            - 现在
+
+            - 当前
+
+            - 目前
+
+            - 现行
+
+            - 最新
+
+
+            不得要求用户再提供日期。
+
+
+            按当前制度判断。
+
+
+
+            如果用户明确给出具体日期，
+
+            不得要求用户说明“是想问当前还是历史”。
+
+
+            应直接按该日期判断。
+
+
+
+            如果用户明确说：
+
+
+            “2025年”
+
+
+            而知识库在2025年内发生过规则切换，
+
+            且不同时间段答案不同，
+
+
+            则可能需要 clarify：
+
+
+            例如：
+
+
+            “请问您想查询2025年哪个日期或时间段？”
+
+
+            只有在年份内部确实存在不同有效规则、
+
+            且具体日期会改变答案时，
+
+            才允许这样澄清。
+
+
+
+            ==================================================
+
+            十二、answer 判定
+
+            ==================================================
+
+
+            满足以下条件时输出 answer：
+
+
+            1. 用户适用范围已经足够明确；
+
+
+            2. query_date 已经明确或可合理确定；
+
+
+            3. 已过滤掉 query_date 不适用的证据；
+
+
+            4. 存在与问题直接相关的有效证据；
+
+
+            5. 有效证据足以支持唯一答案；
+
+
+            6. 不存在真正 conflict。
+
+
+
+            ==================================================
+
+            十三、clarify 判定
+
+            ==================================================
+
+
+            满足以下条件时输出 clarify：
+
+
+            1. 已找到相关有效知识；
+
+
+            2. 用户缺少一个会改变最终答案的必要条件；
+
+
+            3. 无法依据现有输入确定唯一适用规则。
+
+
+            clarifying_question 必须只询问真正缺失的必要条件。
+
+
+
+            ==================================================
+
+            十四、conflict 判定
+
+            ==================================================
+
+
+            满足以下条件时输出 conflict：
+
+
+            1. 用户适用范围明确；
+
+
+            2. query_date 明确；
+
+
+            3. 至少两份证据在 query_date 都有效；
+
+
+            4. 两份证据针对同一对象、同一事实；
+
+
+            5. 给出了不同结论；
+
+
+            6. 不能通过时间、版本、适用范围解释差异。
+
+
+            禁止使用外部知识自行选择其中一份。
+
+
+
+            ==================================================
+
+            十五、refuse 判定
+
+            ==================================================
+
+
+            以下情况输出 refuse：
+
+
+            - 没有与用户问题直接相关的知识；
+
+            - 对 query_date 没有任何有效证据；
+
+            - 检索结果全部在 query_date 尚未生效；
+
+            - 检索结果全部在 query_date 已失效且不能支持该历史时间点；
+
+            - 知识库中没有对应企业规则；
+
+            - 必须依赖外部常识或猜测才能回答。
+
+
+
+            ==================================================
+
+            十六、关键示例
+
+            ==================================================
+
+
+            示例1：
+
+
+            用户：
+
+
+            “2026年4月30日一线城市住宿标准是多少？”
+
+
+            证据A：
+
+
+            V2.0
+
+            生效：2025年6月1日
+
+            失效：2026年4月30日
+
+            一线城市：500元
+
+
+            证据B：
+
+
+            V2.1
+
+            生效：2026年5月1日
+
+            一线城市：600元
+
+
+            判断：
+
+
+            query_date = 2026-04-30
+
+
+            证据A：
+
+            有效
+
+
+            证据B：
+
+            尚未生效，排除
+
+
+            因此：
+
+
+            decision = answer
+
+
+            不得 conflict。
+
+            答案依据只能来自证据A。
+
+
+
+            示例2：
+
+
+            用户：
+
+
+            “2026年5月1日一线城市住宿标准是多少？”
+
+
+            证据A：
+
+
+            失效：2026年4月30日
+
+            500元
+
+
+            证据B：
+
+
+            生效：2026年5月1日
+
+            600元
+
+
+            判断：
+
+
+            query_date = 2026-05-01
+
+
+            证据A：
+
+            已失效，排除
+
+
+            证据B：
+
+            有效
+
+
+            因此：
+
+
+            decision = answer
+
+
+            不得 conflict。
+
+
+
+            示例3：
+
+
+            用户：
+
+
+            “2025年一线城市住宿标准是多少？”
+
+
+            证据A：
+
+
+            2025年对应历史有效制度
+
+            500元
+
+
+            证据B：
+
+
+            2026年5月1日起生效
+
+            600元
+
+
+            不得使用证据B回答2025年的问题。
+
+
+            如果2025年对应时间范围内只有一个有效制度：
+
+
+            decision = answer。
+
+
+
+            示例4：
+
+
+            用户：
+
+
+            “现在一线城市住宿标准是多少？”
+
+
+            当前有效资料A：
+
+
+            一线城市500元
+
+
+            当前有效资料B：
+
+
+            一线城市600元
+
+
+            两份资料在当前时间均有效，
+
+            并针对同一事实。
+
+
+            因此：
+
+
+            decision = conflict。
+
+
+
+            示例5：
+
+
+            用户：
+
+
+            “出差住宿能报多少？”
+
+
+            当前证据：
+
+
+            一线城市600元
+
+            新一线/省会城市450元
+
+            其他城市350元
+
+
+            用户没有提供城市。
+
+
+            因此：
+
+
+            decision = clarify
+
+
+            clarifying_question：
+
+
+            “请问您出差的城市是哪里？”
+
+
+
+            示例6：
+
+
+            用户：
+
+
+            “北上广深出差住宿最多能报多少？”
+
+
+            当前有效资料：
+
+
+            一线城市600元
+
+
+            用户适用范围已经明确。
+
+
+            因此：
+
+
+            decision = answer。
+
+
+
+            ==================================================
+
+            十七、输出前强制检查
+
+            ==================================================
+
+
+            输出 decision 前必须依次完成以下内部检查：
+
+
+            1. target_fact
+
+            用户真正询问的事实是什么？
+
+
+            2. query_date
+
+            用户询问哪个日期或时间范围？
+
+
+            3. temporally_valid_evidence
+
+            哪些证据在 query_date 有效？
+
+
+            4. temporally_invalid_evidence
+
+            哪些证据在 query_date 尚未生效或已经失效？
+
+
+            5. missing_necessary_conditions
+
+            还有哪些会改变最终答案的必要条件？
+
+
+            6. conflicting_valid_evidence
+
+            时间过滤之后，剩余有效证据是否真的冲突？
+
+
+            7. sufficient_evidence
+
+            是否存在足够证据支持回答？
+
+
+            必须先完成以上检查，
+
+            再输出 decision。
+
+
+
+            ==================================================
+
+            十八、强制规则
+
+            ==================================================
+
+
+            以下规则优先级最高：
+
+
+            规则1：
+
+
+            query_date 早于文件 effective_date，
+
+            该文件不得参与 answer 或 conflict。
+
+
+            规则2：
+
+
+            query_date 晚于文件 expiry_date，
+
+            该文件不得参与 answer 或 conflict。
+
+
+            规则3：
+
+
+            如果 query_date 等于 expiry_date，
+
+            默认该文件当天仍有效，
+
+            除非证据明确规定相反。
+
+
+            规则4：
+
+
+            旧版和新版因生效时间不同而答案不同，
+
+            属于版本变化，
+
+            不是 conflict。
+
+
+            规则5：
+
+
+            只有在同一个 query_date 同时有效的证据，
+
+            才有资格参与 conflict 判断。
+
+
+            规则6：
+
+
+            不得用今天的规则回答明确的历史日期问题。
+
+
+            规则7：
+
+
+            不得用未来生效规则回答尚未到达的历史日期问题。
+
+
+
+            ==================================================
+
+            十九、输出要求
+
+            ==================================================
+
+
+            输出必须包含：
+
+
+            decision
+
+
+            reason
+
+
+            clarifying_question
+
+
+
+            其中：
+
+
+            decision 只能是：
+
+
+            answer
+
+            clarify
+
+            conflict
+
+            refuse
+
+
+
+            reason：
+
+
+            简洁说明：
+
+            - 用户询问时间；
+
+            - 哪些证据在该时间点有效；
+
+            - 为什么最终选择该状态。
+
+
+
+            clarifying_question：
+
+
+            只有 decision = clarify 时填写。
+
+
+            其他情况下必须为：
+
+
+            空字符串。
+
+
+
+            禁止直接回答用户的财务业务问题。
+
+
+            你的职责只是进行证据状态判断。'
+        selected: false
+        structured_output:
+          schema:
+            properties:
+              clarifying_question:
+                type: string
+              decision:
+                enum:
+                - answer
+                - clarify
+                - conflict
+                - refuse
+                type: string
+              reason:
+                type: string
+            required:
+            - decision
+            - reason
+            - clarifying_question
+            type: object
+        structured_output_enabled: true
+        title: Evidence_Judge_FINANCE
+        type: llm
+        vision:
+          enabled: false
+      height: 87
+      id: '1788233745457'
+      position:
+        x: 1269.0423947056743
+        y: -914.2198964118635
+      positionAbsolute:
+        x: 1269.0423947056743
+        y: -914.2198964118635
+      selected: false
+      sourcePosition: right
+      targetPosition: left
+      type: custom
+      width: 242
+      zIndex: 0
+    - data:
+        cases:
+        - case_id: 'true'
+          conditions:
+          - comparison_operator: is
+            id: d09cfebe-005d-43e4-a42b-b408846a637e
+            value: conflict
+            varType: object
+            variable_selector:
+            - '1788233745457'
+            - structured_output
+            - decision
+          id: 'true'
+          logical_operator: and
+        - case_id: 6f41c9b6-b334-4e38-aa7d-5eb3af88a639
+          conditions:
+          - comparison_operator: is
+            id: 72007d63-066b-46ee-9e3a-64f92021b056
+            value: clarify
+            varType: object
+            variable_selector:
+            - '1788233745457'
+            - structured_output
+            - decision
+          id: 6f41c9b6-b334-4e38-aa7d-5eb3af88a639
+          logical_operator: and
+        - case_id: 86b25fcc-69f4-402a-9510-a6c4aac7edea
+          conditions:
+          - comparison_operator: is
+            id: 19e3d525-4227-4648-8f40-8f84281a47eb
+            value: answer
+            varType: object
+            variable_selector:
+            - '1788233745457'
+            - structured_output
+            - decision
+          id: 86b25fcc-69f4-402a-9510-a6c4aac7edea
+          logical_operator: and
+        selected: false
+        title: Evidence_Decision_FINANCE
+        type: if-else
+      height: 291
+      id: '1788233976757'
+      position:
+        x: 1559.6498259482778
+        y: -899.5650556291214
+      positionAbsolute:
+        x: 1559.6498259482778
+        y: -899.5650556291214
+      selected: false
+      sourcePosition: right
+      targetPosition: left
+      type: custom
+      width: 242
+      zIndex: 0
+    - data:
+        context:
+          enabled: true
+          variable_selector:
+          - '1788233597400'
+          - result
+        desc: ''
+        isInIteration: false
+        isInLoop: false
+        memory:
+          query_prompt_template: '用户问题：
+
+            {{#sys.query#}}
+
+            请严格依据知识库上下文回答。'
+          role_prefix:
+            assistant: ''
+            user: ''
+          window:
+            enabled: false
+            size: 50
+        model:
+          completion_params:
+            temperature: 0.7
+          mode: chat
+          name: glm-4.7-flash
+          provider: langgenius/zhipuai/zhipuai
+        prompt_template:
+        - id: 7d983629-644f-491a-a120-d571f4420517
+          role: system
+          text: "你是 KnowFlow 企业内部知识可信问答助手。\n\n你的任务是严格根据提供的企业内部知识库上下文回答用户问题。\n\n【企业知识库上下文】\n\
+            \n{{#context#}}\n\n【回答规则】\n\n1. 企业制度、费用、流程和规则类信息只能依据上述知识库上下文回答。\n2. 不允许使用外部常识补充或猜测企业内部规则。\n\
+            3. 如果上述知识库上下文中存在能够直接或间接支持问题的内容，应优先依据该内容回答。\n4. 如果知识库上下文中没有足够依据，明确回答：\n\
+            \   “当前知识库中没有找到足够可靠的依据支持这个问题。”\n5. 不得编造金额、日期、制度名称、审批流程或其他企业内部信息。\n6. 优先使用标记为“当前生效”的制度或\
+            \ FAQ。\n7. 回答简洁、明确，先给结论，再给必要说明。\n8. 如果答案存在条件限制，必须一并说明，不能只给部分结论。\n\n回答格式：\n\
+            \n【答案】\n直接回答问题。\n\n【依据】\n简要说明依据的制度、FAQ 或关键规则。\n\n如果证据不足，则输出：\n\n【暂无法确认】\n\
+            当前知识库中没有找到足够可靠的依据支持这个问题，我不会基于猜测生成企业内部规则。"
+        selected: false
+        title: Answer_FINANCE
+        type: llm
+        vision:
+          enabled: false
+      height: 87
+      id: '17882341957060'
+      position:
+        x: 1882.3430200138587
+        y: -711.5964887621424
+      positionAbsolute:
+        x: 1882.3430200138587
+        y: -711.5964887621424
+      selected: false
+      sourcePosition: right
+      targetPosition: left
+      type: custom
+      width: 242
+      zIndex: 0
+    - data:
+        answer: '{{#17882341957060.text#}}'
+        desc: ''
+        isInIteration: false
+        isInLoop: false
+        selected: false
+        title: Final_FINANCE
+        type: answer
+        variables: []
+      height: 101
+      id: '17882342521980'
+      position:
+        x: 2147.963007700289
+        y: -723.2663442760614
+      positionAbsolute:
+        x: 2147.963007700289
+        y: -723.2663442760614
+      selected: false
+      sourcePosition: right
+      targetPosition: left
+      type: custom
+      width: 242
+      zIndex: 0
+    - data:
+        context:
+          enabled: true
+          variable_selector:
+          - '1788233597400'
+          - result
+        memory:
+          query_prompt_template: '用户问题：
+
+            {{#sys.query#}}
+
+
+            Evidence Judge 原因：
+
+            {{#1788233745457.structured_output.reason#}}
+
+            '
+          role_prefix:
+            assistant: ''
+            user: ''
+          window:
+            enabled: false
+            size: 50
+        model:
+          completion_params:
+            temperature: 0.7
+          mode: chat
+          name: glm-4.7-flash
+          provider: langgenius/zhipuai/zhipuai
+        prompt_template:
+        - id: 3a234277-6bb8-408b-bfe2-1a3a075eec3a
+          role: system
+          text: '你是 KnowFlow 企业知识冲突提示模块。
+
+
+            当前已经确认不同的“当前有效”企业知识对同一个问题存在冲突。
+
+
+            请严格依据提供的上下文输出冲突说明。
+
+
+            【企业知识库上下文】
+
+
+            {{#context#}}
+
+
+            要求：
+
+
+            1. 不得自行判断哪个版本正确；
+
+            2. 清楚说明存在几个不同口径；
+
+            3. 可以列出冲突的具体规则；
+
+            4. 可以说明各规则来自哪份公开企业资料；
+
+            5. 不允许把不同规则强行合并成一个结论；
+
+            6. 建议由知识管理员确认权威口径。
+
+
+            输出格式：
+
+
+            【检测到知识冲突】
+
+
+            当前有效资料对这个问题存在不一致口径，因此暂不直接给出唯一答案。
+
+
+            【冲突口径】
+
+            - 资料A：……
+
+            - 资料B：……
+
+
+            【建议】
+
+            请由知识管理员确认当前权威口径后再使用。'
+        selected: false
+        title: Conflict_Response_FINANCE
+        type: llm
+        vision:
+          enabled: false
+      height: 87
+      id: '1788234280430'
+      position:
+        x: 1867.1858543487547
+        y: -1010.6913042383769
+      positionAbsolute:
+        x: 1867.1858543487547
+        y: -1010.6913042383769
+      selected: false
+      sourcePosition: right
+      targetPosition: left
+      type: custom
+      width: 242
+      zIndex: 0
+    - data:
+        answer: '{{#1788234280430.text#}}'
+        desc: ''
+        isInIteration: false
+        isInLoop: false
+        selected: false
+        title: Final_FINANCE_CONFLICT
+        type: answer
+        variables: []
+      height: 101
+      id: '17882344122970'
+      position:
+        x: 2140.99860319392
+        y: -1001.3802315578674
+      positionAbsolute:
+        x: 2140.99860319392
+        y: -1001.3802315578674
+      selected: false
+      sourcePosition: right
+      targetPosition: left
+      type: custom
+      width: 242
+      zIndex: 0
+    - data:
+        answer: '【需要补充信息】
+
+
+          当前知识库中存在相关规则，但你的问题还缺少用于确定适用口径的必要条件。
+
+
+          {{#1788233745457.structured_output.clarifying_question#}}
+
+
+          补充这个信息后，我再继续查询。'
+        selected: false
+        title: Finance_Clarification
+        type: answer
+        variables: []
+      height: 165
+      id: '1788234477970'
+      position:
+        x: 1867.1858543487547
+        y: -899.5650556291214
+      positionAbsolute:
+        x: 1867.1858543487547
+        y: -899.5650556291214
+      selected: false
+      sourcePosition: right
+      targetPosition: left
+      type: custom
+      width: 242
+      zIndex: 0
+    - data:
+        answer: '【暂无法确认】
+
+
+          当前知识库中没有找到足够可靠的依据支持这个问题，因此我不会基于猜测生成企业内部规则。
+
+
+          判断原因：
+
+          {{{#1788233745457.structured_output.reason#}}'
+        selected: false
+        title: Finance_Evidence_Refusal
+        type: answer
+        variables: []
+      height: 165
+      id: '1788234643652'
+      position:
+        x: 1882.3430200138587
+        y: -606.380315260044
+      positionAbsolute:
+        x: 1882.3430200138587
+        y: -606.380315260044
+      selected: false
+      sourcePosition: right
+      targetPosition: left
+      type: custom
+      width: 242
+      zIndex: 0
+    - data:
+        dataset_ids:
+        - iCdL/Q3zRFfH31wmo8th+6RJ9pZEdg3eI0KMnC6fhebzWthYeFKiw640xcMszxnn
+        desc: ''
+        isInIteration: false
+        isInLoop: false
+        multiple_retrieval_config:
+          reranking_enable: false
+          reranking_mode: weighted_score
+          reranking_model:
+            model: gte-rerank-v2
+            provider: langgenius/tongyi/tongyi
+          score_threshold: null
+          top_k: 5
+          weights:
+            keyword_setting:
+              keyword_weight: 0.3
+            vector_setting:
+              embedding_model_name: '@cf/baai/bge-m3'
+              embedding_provider_name: langgenius/openai_api_compatible/openai_api_compatible
+              vector_weight: 0.7
+            weight_type: customized
+        query_attachment_selector: []
+        query_variable_selector:
+        - sys
+        - query
+        retrieval_mode: multiple
+        selected: false
+        title: KR_HR_CURRENT_CHECK
+        type: knowledge-retrieval
+      height: 89
+      id: '17882476789780'
+      position:
+        x: 959.2887812188225
+        y: -1352.6646813904272
+      positionAbsolute:
+        x: 959.2887812188225
+        y: -1352.6646813904272
+      selected: false
+      sourcePosition: right
+      targetPosition: left
+      type: custom
+      width: 242
+      zIndex: 0
+    - data:
+        context:
+          enabled: true
+          variable_selector:
+          - '17882476789780'
+          - result
+        desc: ''
+        isInIteration: false
+        isInLoop: false
+        memory:
+          query_prompt_template: '用户问题：
+
+            {{#sys.query#}}
+
+
+            请判断当前知识证据应进入 answer、clarify、conflict 或 refuse 中的哪一种状态。
+
+            '
+          role_prefix:
+            assistant: ''
+            user: ''
+          window:
+            enabled: false
+            size: 50
+        model:
+          completion_params:
+            temperature: 0.7
+          mode: chat
+          name: glm-4.7-flash
+          provider: langgenius/zhipuai/zhipuai
+        prompt_template:
+        - id: b32d3e4c-3880-4719-b665-dd6781e4a5e5
+          role: system
+          text: '你是 KnowFlow 企业知识证据审核器。
+
+
+            你的任务不是回答用户问题，而是根据提供的企业知识库证据，
+
+            判断当前问题应该进入哪一种处理状态。
+
+
+            【企业知识库证据】
+
+
+            {{#context#}}
+
+
+            你必须判断：
+
+
+            1. 当前检索证据是否与用户问题直接相关；
+
+            2. 是否存在足够证据支持明确回答；
+
+            3. 用户问题是否缺少必要条件或存在多个适用对象；
+
+            4. 多份“当前生效”的知识是否对同一个关键事实给出了不一致结论；
+
+            5. 系统应该回答、澄清、提示冲突还是拒答。
+
+
+            只能依据提供的知识库证据判断。
+
+            禁止使用外部常识判断哪个企业制度更权威。
+
+
+            如果同一问题因员工类型、招聘类型、身份或适用对象不同而存在多个有效口径，
+
+            且用户没有说明其身份或适用对象，应判断为 clarify，而不是自行选择其中一种。
+
+
+            decision 只能是以下四个值之一：
+
+
+            answer
+
+            clarify
+
+            conflict
+
+            refuse
+
+
+            判定规则：
+
+
+            【answer】
+
+            - 有直接相关、充分的证据；
+
+            - 关键结论不存在冲突；
+
+            - 用户问题条件完整；
+
+            - 可以安全回答。
+
+
+            【clarify】
+
+            - 已找到相关知识；
+
+            - 但问题缺少必要条件；
+
+            - 或存在多个适用对象；
+
+            - 需要用户补充信息后才能选择正确口径。
+
+
+            【conflict】
+
+            - 至少两份当前有效资料都与问题直接相关；
+
+            - 且对同一个关键事实给出了不同结论；
+
+            - 不允许自行选择其中一个作为最终答案。
+
+
+            【refuse】
+
+            - 没有足够相关证据；
+
+            - 检索结果不能支持用户问题；
+
+            - 或知识库中没有对应企业规则。
+
+
+            输出还必须包含：
+
+            - reason：说明判断原因；
+
+            - clarifying_question：只有 decision=clarify 时填写，否则为空字符串。'
+        selected: false
+        structured_output:
+          schema:
+            properties:
+              clarifying_question:
+                type: string
+              decision:
+                enum:
+                - answer
+                - clarify
+                - conflict
+                - refuse
+                type: string
+              reason:
+                type: string
+            required:
+            - decision
+            - reason
+            - clarifying_question
+            type: object
+        structured_output_enabled: true
+        title: EVIDENCE_JUDGE_HR
+        type: llm
+        vision:
+          enabled: false
+      height: 87
+      id: '17882478028510'
+      position:
+        x: 1269.0423947056743
+        y: -1362.6684107293956
+      positionAbsolute:
+        x: 1269.0423947056743
+        y: -1362.6684107293956
+      selected: false
+      sourcePosition: right
+      targetPosition: left
+      type: custom
+      width: 242
+      zIndex: 0
+    - data:
+        cases:
+        - case_id: 'true'
+          conditions:
+          - comparison_operator: is
+            id: d09cfebe-005d-43e4-a42b-b408846a637e
+            value: conflict
+            varType: string
+            variable_selector:
+            - '17882478028510'
+            - structured_output
+            - decision
+          id: 'true'
+          logical_operator: and
+        - case_id: 6f41c9b6-b334-4e38-aa7d-5eb3af88a639
+          conditions:
+          - comparison_operator: is
+            id: 72007d63-066b-46ee-9e3a-64f92021b056
+            value: clarify
+            varType: string
+            variable_selector:
+            - '17882478028510'
+            - structured_output
+            - decision
+          id: 6f41c9b6-b334-4e38-aa7d-5eb3af88a639
+          logical_operator: and
+        - case_id: 86b25fcc-69f4-402a-9510-a6c4aac7edea
+          conditions:
+          - comparison_operator: is
+            id: 19e3d525-4227-4648-8f40-8f84281a47eb
+            value: answer
+            varType: string
+            variable_selector:
+            - '17882478028510'
+            - structured_output
+            - decision
+          id: 86b25fcc-69f4-402a-9510-a6c4aac7edea
+          logical_operator: and
+        desc: ''
+        isInIteration: false
+        isInLoop: false
+        selected: false
+        title: Evidence_Decision_HR
+        type: if-else
+      height: 291
+      id: '17882479504310'
+      position:
+        x: 1550.5555265492155
+        y: -1536.672672564789
+      positionAbsolute:
+        x: 1550.5555265492155
+        y: -1536.672672564789
+      selected: false
+      sourcePosition: right
+      targetPosition: left
+      type: custom
+      width: 242
+      zIndex: 0
+    - data:
+        answer: '【需要补充信息】
+
+
+          当前知识库中存在多个可能适用的有效规则，
+
+          但还需要确认你的具体适用对象，才能避免使用错误口径。
+
+
+          {{#17882478028510.structured_output.clarifying_question#}}
+
+
+          补充这个信息后，我再继续查询。'
+        selected: false
+        title: HR_CLARIFICATION
+        type: answer
+        variables: []
+      height: 181
+      id: '1788248138027'
+      position:
+        x: 1874.1502588551239
+        y: -1536.672672564789
+      positionAbsolute:
+        x: 1874.1502588551239
+        y: -1536.672672564789
+      selected: false
+      sourcePosition: right
+      targetPosition: left
+      type: custom
+      width: 242
+      zIndex: 0
+    - data:
+        answer: '【暂无法确认】
+
+
+          当前 HR 知识库中没有找到足够可靠的依据支持这个问题，
+
+          因此我不会基于猜测生成企业内部规则。
+
+
+          判断原因：
+
+          {{#17882478028510.structured_output.reason#}}'
+        selected: false
+        title: HR_EVIDENCE_REFUSAL
+        type: answer
+        variables: []
+      height: 165
+      id: '1788248190027'
+      position:
+        x: 1867.1858543487547
+        y: -1242.2041049639872
+      positionAbsolute:
+        x: 1867.1858543487547
+        y: -1242.2041049639872
+      selected: false
+      sourcePosition: right
+      targetPosition: left
+      type: custom
+      width: 242
+      zIndex: 0
+    - data:
+        answer: '【检测到知识冲突】
+
+
+          当前有效 HR 资料对这个问题存在不一致口径，
+
+          因此暂不直接给出唯一答案。
+
+
+          请由知识管理员确认当前权威口径后再使用。'
+        selected: false
+        title: HR_CONFLICT
+        type: answer
+        variables: []
+      height: 147
+      id: '1788248229737'
+      position:
+        x: 1867.1858543487547
+        y: -1694.2356151907113
+      positionAbsolute:
+        x: 1867.1858543487547
+        y: -1694.2356151907113
+      selected: false
+      sourcePosition: right
+      targetPosition: left
+      type: custom
+      width: 242
+      zIndex: 0
+    - data:
+        dataset_ids:
+        - kSQKjW+ButZPnqlA2u4KSErKqrnztwx5M7d0IUberzm1oPU/Jo7uDcPLyeYCUpKu
+        desc: ''
+        isInIteration: false
+        isInLoop: false
+        multiple_retrieval_config:
+          reranking_enable: false
+          reranking_mode: weighted_score
+          reranking_model:
+            model: qwen3-rerank
+            provider: langgenius/tongyi/tongyi
+          score_threshold: null
+          top_k: 5
+          weights:
+            keyword_setting:
+              keyword_weight: 0.3
+            vector_setting:
+              embedding_model_name: '@cf/baai/bge-m3'
+              embedding_provider_name: langgenius/openai_api_compatible/openai_api_compatible
+              vector_weight: 0.7
+            weight_type: customized
+        query_attachment_selector: []
+        query_variable_selector:
+        - sys
+        - query
+        retrieval_mode: multiple
+        selected: false
+        title: KR_PRODUCT_CURRENT_CHECK
+        type: knowledge-retrieval
+      height: 89
+      id: '17882545361670'
+      position:
+        x: 939.4961625572288
+        y: -38.991734298451384
+      positionAbsolute:
+        x: 939.4961625572288
+        y: -38.991734298451384
+      selected: false
+      sourcePosition: right
+      targetPosition: left
+      type: custom
+      width: 242
+      zIndex: 0
+    - data:
+        context:
+          enabled: true
+          variable_selector:
+          - '17882545361670'
+          - result
+        desc: ''
+        isInIteration: false
+        isInLoop: false
+        memory:
+          query_prompt_template: '用户问题：
+
+            {{#sys.query#}}
+
+
+            请判断当前知识证据应进入 answer、clarify、conflict 或 refuse 中的哪一种状态。
+
+            '
+          role_prefix:
+            assistant: ''
+            user: ''
+          window:
+            enabled: false
+            size: 50
+        model:
+          completion_params:
+            temperature: 0.7
+          mode: chat
+          name: glm-4.7-flash
+          provider: langgenius/zhipuai/zhipuai
+        prompt_template:
+        - id: b32d3e4c-3880-4719-b665-dd6781e4a5e5
+          role: system
+          text: '你是 KnowFlow 企业知识证据审核器。
+
+
+            你的任务不是直接回答用户问题，而是仅依据提供的企业知识库证据 {{#context#}}，
+
+            判断当前用户问题应该进入以下哪一种处理状态：
+
+
+            - answer
+
+            - clarify
+
+            - conflict
+
+            - refuse
+
+
+            你必须严格区分：
+
+            1. 用户当前真正询问的“目标结论”
+
+            2. 决定该目标结论所必需的条件
+
+            3. 仅用于流程、身份、后续办理或补充说明的条件
+
+
+            不得因为知识库中出现了更多字段、产品类型、身份要求或流程要求，
+
+            就自动要求用户补充信息。
+
+
+
+            ====================
+
+            一、总体判定顺序
+
+            ====================
+
+
+            必须严格按照以下顺序判断：
+
+
+            第一步：识别用户的目标问题。
+
+            例如：
+
+            - “可以退款吗？” → 目标是“退款资格”
+
+            - “怎么退款？” → 目标是“退款流程”
+
+            - “谁可以申请退款？” → 目标是“退款申请主体”
+
+            - “多久能到账？” → 目标是“退款处理时效”
+
+            - “现在和旧版有什么区别？” → 目标是“版本比较”
+
+
+            第二步：只找与该“目标问题”直接相关的判断条件。
+
+
+            第三步：检查用户是否已经提供了足以判断该目标问题的必要条件。
+
+
+            第四步：如果已经可以得到唯一结论，必须输出 answer。
+
+
+            第五步：只有确实缺少“会改变目标结论”的必要条件，才输出 clarify。
+
+
+            不得为了让用户信息更加完整而澄清。
+
+            不得为了覆盖文档里的所有字段而澄清。
+
+
+
+            ====================
+
+            二、必要条件判定原则
+
+            ====================
+
+
+            将知识库中的条件分为三类：
+
+
+            A. decision_condition
+
+            直接决定用户当前问题结论的条件。
+
+
+            B. process_condition
+
+            只影响办理流程、发起方式、操作步骤、审批主体、退款到账流程等，
+
+            但不改变用户当前所问资格结论的条件。
+
+
+            C. scope_information
+
+            用于描述产品范围、版本、套餐或其他适用范围的信息。
+
+
+            只有 A 类 decision_condition 缺失，
+
+            并且其不同取值会导致不同答案时，
+
+            才允许输出 clarify。
+
+
+
+            例如：
+
+
+            规则：
+
+            - 付款后14个自然日内；
+
+            - 累计使用核心付费功能不超过3次；
+
+            - 满足以上条件可申请全额退款；
+
+            - 退款申请由购买账号管理员发起。
+
+
+            用户问：
+
+            “产品A付款10天，核心付费功能用了2次，可以退款吗？”
+
+
+            此时用户询问的是：
+
+
+            退款资格
+
+
+            与退款资格直接相关的 decision_condition 是：
+
+
+            - 付款天数
+
+            - 核心付费功能使用次数
+
+
+            用户已经给出：
+
+
+            付款10天
+
+            使用2次
+
+
+            两项都足以判断退款资格。
+
+
+            “是否为购买账号管理员”只影响后续由谁发起退款申请，
+
+            属于 process_condition，
+
+            不是当前“能不能退款”的资格条件。
+
+
+            因此必须输出：
+
+
+            decision = answer
+
+
+            不得因为没有提供管理员身份而输出 clarify。
+
+
+
+            ====================
+
+            三、产品范围特别规则
+
+            ====================
+
+
+            不要因为检索资料中同时出现：
+
+
+            - 标准版
+
+            - 企业定制版
+
+            - 月度订阅
+
+            - 年度订阅
+
+            - 不同套餐
+
+            - 不同账号身份
+
+
+            就自动输出 clarify。
+
+
+            只有当知识库明确表明：
+
+
+            “不同产品类型对于用户当前询问的目标问题存在不同结论”
+
+
+            并且无法从用户问题判断适用哪一种时，
+
+            产品类型才属于必要条件。
+
+
+            例如：
+
+
+            如果证据明确规定：
+
+
+            标准版：14天内可以退款
+
+            企业定制版：任何情况下均不能退款
+
+
+            那么用户只问：
+
+
+            “产品A可以退款吗？”
+
+
+            且无法判断具体版本时，
+
+            应输出 clarify。
+
+
+            但如果当前检索到的退款资格规则已经明确适用于“产品A”，
+
+            而企业定制合同仅说明“按合同条款另行执行”，
+
+            用户又没有主动提到：
+
+
+            - 企业定制
+
+            - 定制合同
+
+            - 企业合同
+
+            - 特殊版本
+
+
+            则不得仅因为文档存在“企业定制合同”描述而自动要求确认版本。
+
+
+            对于普通的“产品A”表述，
+
+            应基于当前检索到的产品A通用/标准规则进行判断。
+
+
+            只有用户明确提到企业定制、特殊合同，
+
+            或证据明确显示当前问题存在两个互斥且都会改变答案的适用口径时，
+
+            才要求澄清产品类型。
+
+
+
+            ====================
+
+            四、answer 判定
+
+            ====================
+
+
+            满足以下条件时，必须输出 answer：
+
+
+            1. 检索证据与用户问题直接相关；
+
+            2. 已经存在足够证据判断用户当前询问的目标结论；
+
+            3. 所有会改变该目标结论的 decision_condition 均已明确；
+
+            4. 关键结论没有证据冲突。
+
+
+            重要：
+
+
+            只要已经可以唯一判断用户当前所问问题，
+
+            即使仍缺少其他流程信息、账号身份信息、后续办理信息，
+
+            也必须输出 answer。
+
+
+            不得继续追问与当前结论无关的信息。
+
+
+
+            ====================
+
+            五、clarify 判定
+
+            ====================
+
+
+            只有同时满足以下条件时，才能输出 clarify：
+
+
+            1. 已找到与问题直接相关的有效知识；
+
+            2. 当前确实缺少至少一个 decision_condition；
+
+            3. 该条件的不同取值会导致不同答案；
+
+            4. 无法从用户已提供的信息推断该条件。
+
+
+            例如：
+
+
+            用户问：
+
+            “产品A能退款吗？”
+
+
+            规则要求：
+
+            - 付款是否在14个自然日内；
+
+            - 核心功能使用次数是否不超过3次。
+
+
+            用户没有提供这两个信息。
+
+
+            因此应：
+
+
+            decision = clarify
+
+
+            clarifying_question 应只询问真正缺失的必要条件，例如：
+
+
+            “请问付款距今多少天，以及累计使用核心付费功能多少次？”
+
+
+            不要询问不会改变退款资格的问题。
+
+
+
+            ====================
+
+            六、以下情况禁止 clarify
+
+            ====================
+
+
+            不得因为以下原因单独输出 clarify：
+
+
+            - 用户没有说明是不是购买账号管理员；
+
+            - 用户没有说明谁来发起申请；
+
+            - 用户没有说明退款到账方式；
+
+            - 用户没有说明后续审批人；
+
+            - 用户没有说明发票处理情况；
+
+            - 用户没有提供与当前资格判断无关的身份信息；
+
+            - 文档中出现了企业定制合同，但用户没有提到企业定制；
+
+            - 文档存在更多字段，但当前问题已经能够唯一判断；
+
+            - 只是为了获得更完整的用户画像。
+
+
+            原则：
+
+
+            “信息不完整”不等于“无法回答”。
+
+
+            只有“影响当前目标结论的必要信息不完整”，才是 clarify。
+
+
+
+            ====================
+
+            七、conflict 判定
+
+            ====================
+
+
+            只有满足以下条件时输出 conflict：
+
+
+            1. 至少两份有效资料都直接适用于用户当前问题；
+
+            2. 两份资料针对同一个目标事实；
+
+            3. 给出了互相不兼容的结论；
+
+            4. 不能通过产品类型、版本、时间、适用范围等因素合理区分。
+
+
+            不得把“适用对象不同”误判成 conflict。
+
+            不得把“一个是资格规则、一个是流程规则”误判成 conflict。
+
+
+
+            ====================
+
+            八、refuse 判定
+
+            ====================
+
+
+            以下情况输出 refuse：
+
+
+            - 没有与问题直接相关的企业知识证据；
+
+            - 检索内容不能支持用户所问结论；
+
+            - 知识库没有相关企业规则；
+
+            - 只能依赖外部常识或猜测才能回答。
+
+
+            不得使用模型外部知识补充企业内部规则。
+
+
+
+            ====================
+
+            九、强制决策检查
+
+            ====================
+
+
+            在输出 decision 前，必须内部完成以下检查：
+
+
+            1. user_goal：
+
+            用户究竟在问什么？
+
+
+            2. decision_conditions：
+
+            哪些条件真正决定这个问题的答案？
+
+
+            3. provided_conditions：
+
+            用户已经明确提供了哪些条件？
+
+
+            4. missing_decision_conditions：
+
+            还有哪些会改变答案的必要条件缺失？
+
+
+            5. process_only_conditions：
+
+            哪些只是流程、身份或后续办理条件？
+
+
+            6. unique_answer：
+
+            现有条件是否已经可以得到唯一结论？
+
+
+            如果：
+
+
+            missing_decision_conditions 为空
+
+            并且
+
+            unique_answer = true
+
+
+            则：
+
+
+            decision 必须为 answer。
+
+
+            不得输出 clarify。
+
+
+
+            ====================
+
+            十、强制示例
+
+            ====================
+
+
+            示例1：
+
+
+            用户：
+
+            “产品A付款10天，核心付费功能用了2次，可以退款吗？”
+
+
+            证据：
+
+            付款后14个自然日内，累计使用核心付费功能不超过3次，
+
+            可申请全额退款。
+
+            退款申请由购买账号管理员发起。
+
+
+            判断：
+
+
+            user_goal = 退款资格
+
+
+            decision_conditions：
+
+            - 付款天数
+
+            - 核心功能使用次数
+
+
+            provided_conditions：
+
+            - 10天
+
+            - 2次
+
+
+            missing_decision_conditions：
+
+            无
+
+
+            “购买账号管理员”属于 process_condition，
+
+            不会改变退款资格结论。
+
+
+            必须输出：
+
+
+            decision = answer
+
+
+
+            示例2：
+
+
+            用户：
+
+            “产品A付款15天还能无理由退款吗？”
+
+
+            规则：
+
+            超过14个自然日不支持无理由退款。
+
+
+            即使用户没有说明核心功能使用次数，
+
+            付款15天这一条件已经足以得到否定结论。
+
+
+            因此：
+
+
+            decision = answer
+
+
+            不得继续询问核心功能使用次数。
+
+
+
+            示例3：
+
+
+            用户：
+
+            “产品A付款5天，已经使用过核心功能，可以退款吗？”
+
+
+            规则要求累计使用次数不超过3次。
+
+
+            用户只说“使用过”，没有说明具体次数。
+
+
+            1次、2次、3次与4次可能导致不同结论。
+
+
+            因此：
+
+
+            decision = clarify
+
+
+            clarifying_question：
+
+            “请问累计使用核心付费功能多少次？”
+
+
+
+            示例4：
+
+
+            用户：
+
+            “产品A能退款吗？”
+
+
+            付款时间和使用次数均缺失。
+
+
+            因此：
+
+
+            decision = clarify
+
+
+
+            ====================
+
+            十一、输出要求
+
+            ====================
+
+
+            decision 只能是：
+
+
+            answer
+
+            clarify
+
+            conflict
+
+            refuse
+
+
+            同时输出：
+
+
+            reason：
+
+            简洁说明为什么做出这个判断。
+
+
+            clarifying_question：
+
+            仅当 decision = clarify 时填写。
+
+            其他情况必须输出空字符串。
+
+
+            禁止直接回答用户的业务问题。
+
+            只进行证据状态判断。'
+        selected: false
+        structured_output:
+          schema:
+            properties:
+              clarifying_question:
+                type: string
+              decision:
+                enum:
+                - answer
+                - clarify
+                - conflict
+                - refuse
+                type: string
+              reason:
+                type: string
+            required:
+            - decision
+            - reason
+            - clarifying_question
+            type: object
+        structured_output_enabled: true
+        title: EVIDENCE_JUDGE_PRODUCT
+        type: llm
+        vision:
+          enabled: false
+      height: 87
+      id: '17882546095110'
+      position:
+        x: 1230.4922121935417
+        y: -54.76515427833881
+      positionAbsolute:
+        x: 1230.4922121935417
+        y: -54.76515427833881
+      selected: false
+      sourcePosition: right
+      targetPosition: left
+      type: custom
+      width: 242
+      zIndex: 0
+    - data:
+        cases:
+        - case_id: 'true'
+          conditions:
+          - comparison_operator: is
+            id: d09cfebe-005d-43e4-a42b-b408846a637e
+            value: conflict
+            varType: string
+            variable_selector:
+            - '17882546095110'
+            - structured_output
+            - decision
+          id: 'true'
+          logical_operator: and
+        - case_id: 6f41c9b6-b334-4e38-aa7d-5eb3af88a639
+          conditions:
+          - comparison_operator: is
+            id: 72007d63-066b-46ee-9e3a-64f92021b056
+            value: clarify
+            varType: string
+            variable_selector:
+            - '17882546095110'
+            - structured_output
+            - decision
+          id: 6f41c9b6-b334-4e38-aa7d-5eb3af88a639
+          logical_operator: and
+        - case_id: 86b25fcc-69f4-402a-9510-a6c4aac7edea
+          conditions:
+          - comparison_operator: is
+            id: 19e3d525-4227-4648-8f40-8f84281a47eb
+            value: answer
+            varType: string
+            variable_selector:
+            - '17882546095110'
+            - structured_output
+            - decision
+          id: 86b25fcc-69f4-402a-9510-a6c4aac7edea
+          logical_operator: and
+        desc: ''
+        isInIteration: false
+        isInLoop: false
+        selected: false
+        title: EVIDENCE_DECISION_PRODUCT
+        type: if-else
+      height: 291
+      id: '17882548088070'
+      position:
+        x: 1564.196975647809
+        y: -245.16421258652974
+      positionAbsolute:
+        x: 1564.196975647809
+        y: -245.16421258652974
+      selected: false
+      sourcePosition: right
+      targetPosition: left
+      type: custom
+      width: 242
+      zIndex: 0
+    - data:
+        answer: '【需要补充信息】
+
+
+          当前知识库中存在相关产品规则，
+
+          但还需要确认部分条件，才能判断具体适用结果。
+
+
+          {{#17882546095110.structured_output.clarifying_question#}}
+
+
+          补充这个信息后，我再继续查询。'
+        selected: false
+        title: PRODUCT_CLARIFICATION
+        type: answer
+        variables: []
+      height: 165
+      id: '1788254996488'
+      position:
+        x: 1874.1502588551239
+        y: -112.83934959056876
+      positionAbsolute:
+        x: 1874.1502588551239
+        y: -112.83934959056876
+      selected: false
+      sourcePosition: right
+      targetPosition: left
+      type: custom
+      width: 242
+      zIndex: 0
+    - data:
+        answer: '【暂无法确认】
+
+
+          当前产品知识库中没有找到足够可靠的依据支持这个问题，
+
+          因此我不会基于猜测生成产品规则。
+
+
+          判断原因：
+
+          {{#17882546095110.structured_output.reason#}}'
+        selected: false
+        title: PRODUCT_EVIDENCE_REFUSAL
+        type: answer
+        variables: []
+      height: 165
+      id: '1788255046406'
+      position:
+        x: 1882.3430200138587
+        y: 169.58771168211462
+      positionAbsolute:
+        x: 1882.3430200138587
+        y: 169.58771168211462
+      selected: false
+      sourcePosition: right
+      targetPosition: left
+      type: custom
+      width: 242
+      zIndex: 0
+    - data:
+        answer: '【检测到知识冲突】
+
+
+          当前有效产品资料对该问题存在不一致口径，
+
+          因此暂不直接给出唯一答案。
+
+
+          请由产品知识负责人确认权威规则后再使用。'
+        selected: false
+        title: PRODUCT_CONFLICT
+        type: answer
+        variables: []
+      height: 147
+      id: '1788255129214'
+      position:
+        x: 1874.1502588551239
+        y: -273.7875821760225
+      positionAbsolute:
+        x: 1874.1502588551239
+        y: -273.7875821760225
+      selected: false
+      sourcePosition: right
+      targetPosition: left
+      type: custom
+      width: 242
+      zIndex: 0
+    - data:
+        dataset_ids:
+        - seigHb4lG4Jyp4P+KUdVIw8hEisHeLLcaYKup3KbHhXALsXa8dPOuPPaasbgeajd
+        desc: ''
+        isInIteration: false
+        isInLoop: false
+        multiple_retrieval_config:
+          reranking_enable: false
+          reranking_mode: weighted_score
+          reranking_model:
+            model: qwen3-rerank
+            provider: langgenius/tongyi/tongyi
+          score_threshold: null
+          top_k: 5
+          weights:
+            keyword_setting:
+              keyword_weight: 0.3
+            vector_setting:
+              embedding_model_name: '@cf/baai/bge-m3'
+              embedding_provider_name: langgenius/openai_api_compatible/openai_api_compatible
+              vector_weight: 0.7
+            weight_type: customized
+        query_attachment_selector: []
+        query_variable_selector:
+        - sys
+        - query
+        retrieval_mode: multiple
+        selected: false
+        title: KR_SERVICE_CURRENT_CHECK
+        type: knowledge-retrieval
+      height: 89
+      id: '17882571906040'
+      position:
+        x: 577.4677369211622
+        y: 331.5929599518756
+      positionAbsolute:
+        x: 577.4677369211622
+        y: 331.5929599518756
+      selected: false
+      sourcePosition: right
+      targetPosition: left
+      type: custom
+      width: 242
+      zIndex: 0
+    - data:
+        cases:
+        - case_id: 'true'
+          conditions:
+          - comparison_operator: is
+            id: d09cfebe-005d-43e4-a42b-b408846a637e
+            value: conflict
+            varType: string
+            variable_selector:
+            - '17882573190840'
+            - structured_output
+            - decision
+          id: 'true'
+          logical_operator: and
+        - case_id: 6f41c9b6-b334-4e38-aa7d-5eb3af88a639
+          conditions:
+          - comparison_operator: is
+            id: 72007d63-066b-46ee-9e3a-64f92021b056
+            value: clarify
+            varType: string
+            variable_selector:
+            - '17882573190840'
+            - structured_output
+            - decision
+          id: 6f41c9b6-b334-4e38-aa7d-5eb3af88a639
+          logical_operator: and
+        - case_id: 86b25fcc-69f4-402a-9510-a6c4aac7edea
+          conditions:
+          - comparison_operator: is
+            id: 19e3d525-4227-4648-8f40-8f84281a47eb
+            value: answer
+            varType: string
+            variable_selector:
+            - '17882573190840'
+            - structured_output
+            - decision
+          id: 86b25fcc-69f4-402a-9510-a6c4aac7edea
+          logical_operator: and
+        desc: ''
+        isInIteration: false
+        isInLoop: false
+        selected: false
+        title: EVIDENCE_JUDGE_SERVICE
+        type: if-else
+      height: 291
+      id: '17882572740190'
+      position:
+        x: 1255.5991339473453
+        y: 419.7034947653921
+      positionAbsolute:
+        x: 1255.5991339473453
+        y: 419.7034947653921
+      selected: false
+      sourcePosition: right
+      targetPosition: left
+      type: custom
+      width: 242
+      zIndex: 0
+    - data:
+        context:
+          enabled: true
+          variable_selector:
+          - '17882571906040'
+          - result
+        desc: ''
+        isInIteration: false
+        isInLoop: false
+        memory:
+          query_prompt_template: '用户问题：
+
+            {{#sys.query#}}
+
+
+            请判断当前知识证据应进入 answer、clarify、conflict 或 refuse 中的哪一种状态。
+
+            '
+          role_prefix:
+            assistant: ''
+            user: ''
+          window:
+            enabled: false
+            size: 50
+        model:
+          completion_params:
+            temperature: 0.7
+          mode: chat
+          name: glm-4.7-flash
+          provider: langgenius/zhipuai/zhipuai
+        prompt_template:
+        - id: b32d3e4c-3880-4719-b665-dd6781e4a5e5
+          role: system
+          text: '你是 KnowFlow 企业知识证据审核器。
+
+
+            你的任务不是回答用户问题，而是根据提供的企业知识库证据，
+
+            判断当前问题应该进入哪一种处理状态。
+
+
+            【企业知识库证据】
+
+
+            {{#context#}}
+
+
+            你必须判断：
+
+
+            1. 当前检索证据是否与用户问题直接相关；
+
+            2. 是否存在足够证据支持明确回答；
+
+            3. 用户问题是否缺少必要条件或存在多个适用对象；
+
+            4. 多份“当前生效”的知识是否对同一个关键事实给出了不一致结论；
+
+            5. 系统应该回答、澄清、提示冲突还是拒答。
+
+
+            只能依据提供的知识库证据判断。
+
+            禁止使用外部常识判断哪个企业制度更权威。
+
+
+            如果问题因投诉等级、问题严重程度、服务类型或工单类型不同而对应不同处理时效，
+
+            且用户没有提供必要条件，应判断为 clarify。
+
+
+            decision 只能是以下四个值之一：
+
+
+            answer
+
+            clarify
+
+            conflict
+
+            refuse
+
+
+            判定规则：
+
+
+            【answer】
+
+            - 有直接相关、充分的证据；
+
+            - 关键结论不存在冲突；
+
+            - 用户问题条件完整；
+
+            - 可以安全回答。
+
+
+            【clarify】
+
+            - 已找到相关知识；
+
+            - 但问题缺少必要条件；
+
+            - 或存在多个适用对象；
+
+            - 需要用户补充信息后才能选择正确口径。
+
+
+            【conflict】
+
+            - 至少两份当前有效资料都与问题直接相关；
+
+            - 且对同一个关键事实给出了不同结论；
+
+            - 不允许自行选择其中一个作为最终答案。
+
+
+            【refuse】
+
+            - 没有足够相关证据；
+
+            - 检索结果不能支持用户问题；
+
+            - 或知识库中没有对应企业规则。
+
+
+            输出还必须包含：
+
+            - reason：说明判断原因；
+
+            - clarifying_question：只有 decision=clarify 时填写，否则为空字符串。'
+        selected: false
+        structured_output:
+          schema:
+            properties:
+              clarifying_question:
+                type: string
+              decision:
+                enum:
+                - answer
+                - clarify
+                - conflict
+                - refuse
+                type: string
+              reason:
+                type: string
+            required:
+            - decision
+            - reason
+            - clarifying_question
+            type: object
+        structured_output_enabled: true
+        title: EVIDENCE_JUDGE_SERVICE
+        type: llm
+        vision:
+          enabled: false
+      height: 87
+      id: '17882573190840'
+      position:
+        x: 945.514774915715
+        y: 385.39628908529716
+      positionAbsolute:
+        x: 945.514774915715
+        y: 385.39628908529716
+      selected: false
+      sourcePosition: right
+      targetPosition: left
+      type: custom
+      width: 242
+      zIndex: 0
+    - data:
+        answer: '【需要补充信息】
+
+
+          当前客服知识库中存在相关处理规则，
+
+          但还需要确认具体问题类型或投诉等级，
+
+          才能确定适用的处理时效或流程。
+
+
+          {{#17882573190840.structured_output.clarifying_question#}}
+
+
+          补充这个信息后，我再继续查询。'
+        selected: false
+        title: SERVICE_CLARIFICATION
+        type: answer
+        variables: []
+      height: 181
+      id: '1788257517515'
+      position:
+        x: 1559.6498259482778
+        y: 553.7956159922317
+      positionAbsolute:
+        x: 1559.6498259482778
+        y: 553.7956159922317
+      selected: false
+      sourcePosition: right
+      targetPosition: left
+      type: custom
+      width: 242
+      zIndex: 0
+    - data:
+        answer: '【暂无法确认】
+
+
+          当前客服知识库中没有找到足够可靠的依据支持这个问题，
+
+          因此我不会基于猜测生成企业服务规则。
+
+
+          判断原因：
+
+          {{#17882573190840.structured_output.reason#}}'
+        selected: false
+        title: SERVICE_EVIDENCE_REFUSAL
+        type: answer
+        variables: []
+      height: 165
+      id: '1788257570747'
+      position:
+        x: 1559.6498259482778
+        y: 869.158006666953
+      positionAbsolute:
+        x: 1559.6498259482778
+        y: 869.158006666953
+      selected: false
+      sourcePosition: right
+      targetPosition: left
+      type: custom
+      width: 242
+      zIndex: 0
+    - data:
+        answer: '【检测到知识冲突】
+
+
+          当前有效客服资料对该问题存在不一致口径，
+
+          因此暂不直接给出唯一答案。
+
+
+          请由客服知识负责人确认当前权威规则。'
+        selected: false
+        title: SERVICE_CONFLICT
+        type: answer
+        variables: []
+      height: 147
+      id: '1788257615634'
+      position:
+        x: 1564.196975647809
+        y: 380.4755357717021
+      positionAbsolute:
+        x: 1564.196975647809
+        y: 380.4755357717021
+      selected: false
+      sourcePosition: right
+      targetPosition: left
+      type: custom
+      width: 242
+      zIndex: 0
+    - data:
+        dataset_ids:
+        - kSQKjW+ButZPnqlA2u4KSErKqrnztwx5M7d0IUberzm1oPU/Jo7uDcPLyeYCUpKu
+        multiple_retrieval_config:
+          reranking_enable: false
+          reranking_mode: weighted_score
+          reranking_model:
+            model: qwen3-rerank
+            provider: langgenius/tongyi/tongyi
+          score_threshold: null
+          top_k: 5
+          weights:
+            keyword_setting:
+              keyword_weight: 0.3
+            vector_setting:
+              embedding_model_name: '@cf/baai/bge-m3'
+              embedding_provider_name: langgenius/openai_api_compatible/openai_api_compatible
+              vector_weight: 0.7
+            weight_type: customized
+        query_attachment_selector: []
+        query_variable_selector:
+        - sys
+        - query
+        retrieval_mode: multiple
+        selected: false
+        title: KR_PRODUCT_CURRENT_COMPARE
+        type: knowledge-retrieval
+      height: 89
+      id: '1788403294643'
+      position:
+        x: 939.4961625572288
+        y: 180.02901626436403
+      positionAbsolute:
+        x: 939.4961625572288
+        y: 180.02901626436403
+      selected: false
+      sourcePosition: right
+      targetPosition: left
+      type: custom
+      width: 242
+      zIndex: 0
+    - data:
+        dataset_ids:
+        - X9RQWk6rX1GO+XKx32HHbNK4YmWGit+yAFMyL15DP1Vy8nOIFfu0rN8NhOGedCMr
+        multiple_retrieval_config:
+          reranking_enable: false
+          reranking_mode: weighted_score
+          reranking_model:
+            model: qwen3-rerank
+            provider: langgenius/tongyi/tongyi
+          score_threshold: null
+          top_k: 5
+          weights:
+            keyword_setting:
+              keyword_weight: 0.3
+            vector_setting:
+              embedding_model_name: '@cf/baai/bge-m3'
+              embedding_provider_name: langgenius/openai_api_compatible/openai_api_compatible
+              vector_weight: 0.7
+            weight_type: customized
+        query_attachment_selector: []
+        query_variable_selector:
+        - sys
+        - query
+        retrieval_mode: multiple
+        selected: false
+        title: KR_PRODUCT_HISTORY_COMPARE
+        type: knowledge-retrieval
+      height: 89
+      id: '1788403363072'
+      position:
+        x: 939.4961625572288
+        y: 280.31935013813325
+      positionAbsolute:
+        x: 939.4961625572288
+        y: 280.31935013813325
+      selected: false
+      sourcePosition: right
+      targetPosition: left
+      type: custom
+      width: 242
+      zIndex: 0
+    - data:
+        context:
+          enabled: false
+          variable_selector: []
+        memory:
+          query_prompt_template: '用户问题：
+
+            {{#sys.query#}}
+
+
+            【当前版本知识】
+
+            {{#1788403294643.result#}}
+
+
+            【历史版本知识】
+
+            {{#1788403363072.result#}}
+
+
+            请严格根据以上证据比较两个版本。'
+          role_prefix:
+            assistant: ''
+            user: ''
+          window:
+            enabled: false
+            size: 50
+        model:
+          completion_params:
+            temperature: 0.7
+          mode: chat
+          name: glm-4.7-flash
+          provider: langgenius/zhipuai/zhipuai
+        prompt_template:
+        - id: cf46fdc1-df46-4606-904e-fad7572155bc
+          role: system
+          text: '你是 KnowFlow 企业产品规则版本对比助手。
+
+
+            你的任务是根据“当前版本知识库”和“历史版本知识库”的检索结果，
+
+            回答用户关于产品规则版本差异的问题。
+
+
+            必须遵守以下规则：
+
+
+            1. 只能依据提供的知识库内容回答，不得使用外部知识补充企业规则。
+
+
+            2. 必须同时检查当前版本与历史版本的证据。
+
+            不得只根据其中一个版本作比较结论。
+
+
+            3. 如果两个版本均有足够证据：
+
+            - 分别说明当前规则和历史规则；
+
+            - 明确指出发生变化的字段、条件、时间或流程；
+
+            - 不得推测规则修改原因。
+
+
+            4. 如果任一版本没有足够可靠证据：
+
+            明确说明缺少哪一侧的依据，不得自行补全。
+
+
+            5. 若同一版本内部存在互相冲突的证据：
+
+            不得自行选择其中一个口径，应明确说明存在知识冲突。
+
+
+            6. 只回答用户询问的版本差异，不扩展无关规则。
+
+
+            输出格式：
+
+
+            【当前规则】
+
+            ...
+
+
+            【旧版规则】
+
+            ...
+
+
+            【主要变化】
+
+            1. ...
+
+            2. ...
+
+
+            【依据】
+
+            ...'
+        selected: false
+        title: ANSWER_PRODUCT_VERSION_COMPARE
+        type: llm
+        vision:
+          enabled: false
+      height: 87
+      id: '1788403440272'
+      position:
+        x: 1238.8571467356828
+        y: 239.40687224914424
+      positionAbsolute:
+        x: 1238.8571467356828
+        y: 239.40687224914424
+      selected: false
+      sourcePosition: right
+      targetPosition: left
+      type: custom
+      width: 242
+      zIndex: 0
+    - data:
+        answer: '{{#1788403440272.text#}}'
+        selected: false
+        title: FINAL_PRODUCT_VERSION_COMPARE
+        type: answer
+        variables: []
+      height: 101
+      id: '1788404065570'
+      position:
+        x: 1526.342559717181
+        y: 232.80933269527978
+      positionAbsolute:
+        x: 1526.342559717181
+        y: 232.80933269527978
+      selected: false
+      sourcePosition: right
+      targetPosition: left
+      type: custom
+      width: 242
+      zIndex: 0
+    viewport:
+      x: 202.25174385352432
+      y: 840.2626793930904
+      zoom: 0.4352752816480627
+  rag_pipeline_variables: []
