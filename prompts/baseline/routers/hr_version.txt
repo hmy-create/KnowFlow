@@ -1,0 +1,16 @@
+请判断 HR 问题的版本意图。
+
+Current：
+用户询问现在、当前、现行、最新的人事制度；
+没有明确历史时间时默认 Current。
+
+Historical：
+用户询问以前、过去、旧版、历史、2025 年、
+V1.0 等旧版人事制度时属于 Historical。
+
+只能输出：
+Current
+或
+Historical
+
+禁止输出解释。

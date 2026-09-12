@@ -4,7 +4,7 @@ from app.models.chunk import Chunk
 from app.models.trace import Trace
 from app.models.eval import EvalCase
 from app.models.badcase import Badcase
-
+from app.models.permission import PermissionResult
 
 __all__ = [
     "User",
@@ -13,4 +13,5 @@ __all__ = [
     "Trace",
     "EvalCase",
     "Badcase",
+    "PermissionResult",
 ]
