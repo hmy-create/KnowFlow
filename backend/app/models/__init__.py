@@ -5,6 +5,10 @@ from app.models.trace import Trace
 from app.models.eval import EvalCase
 from app.models.badcase import Badcase
 from app.models.permission import PermissionResult
+from app.models.version import (
+    QueryTimeContext,
+    VersionFilterResult,
+)
 
 __all__ = [
     "User",
@@ -14,4 +18,6 @@ __all__ = [
     "EvalCase",
     "Badcase",
     "PermissionResult",
+    "QueryTimeContext",
+    "VersionFilterResult",
 ]

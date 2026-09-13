@@ -26,3 +26,11 @@ class ChatResponse(BaseModel):
     permission_decision: str
 
     message: str
+
+    query_date: str | None = None
+
+    time_selector: str | None = None
+
+    period_start: str | None = None
+
+    period_end: str | None = None
