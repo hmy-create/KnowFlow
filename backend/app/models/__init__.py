@@ -10,6 +10,11 @@ from app.models.version import (
     VersionFilterResult,
 )
 
+from app.models.retrieval import (
+    RetrievalCandidate,
+    HybridRetrievalResult,
+)
+
 __all__ = [
     "User",
     "Document",
@@ -20,4 +25,6 @@ __all__ = [
     "PermissionResult",
     "QueryTimeContext",
     "VersionFilterResult",
+    "RetrievalCandidate",
+    "HybridRetrievalResult",
 ]
