@@ -11,7 +11,9 @@ REPO_ROOT = Path(__file__).resolve().parents[3]
 load_dotenv(REPO_ROOT / ".env")
 
 
-def get_connection():
+def get_connection(
+    register_pgvector: bool = True,
+):
     conn = psycopg.connect(
         host=os.getenv(
             "POSTGRES_HOST",
@@ -37,6 +39,7 @@ def get_connection():
         ),
     )
 
-    register_vector(conn)
+    if register_pgvector:
+        register_vector(conn)
 
     return conn

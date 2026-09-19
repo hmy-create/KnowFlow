@@ -176,3 +176,26 @@ def delete_chunks(
         conn.commit()
 
     return deleted
+
+def delete_document_chunks(
+    document_id: str,
+) -> int:
+
+    sql = """
+    DELETE FROM chunk_embeddings
+    WHERE document_id = %s;
+    """
+
+    with get_connection() as conn:
+        with conn.cursor() as cur:
+
+            cur.execute(
+                sql,
+                (document_id,),
+            )
+
+            deleted = cur.rowcount
+
+        conn.commit()
+
+    return deleted

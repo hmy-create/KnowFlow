@@ -1,0 +1,15 @@
+﻿docs\corpus\KnowFlow_Corpus_V1.0\00_语料说明与测试用例.docx
+docs\corpus\KnowFlow_Corpus_V1.0\01_员工转正管理制度_V1.0_已失效.docx
+docs\corpus\KnowFlow_Corpus_V1.0\02_员工转正管理制度_V2.0_生效.docx
+docs\corpus\KnowFlow_Corpus_V1.0\03_员工请假管理制度_V2.1_生效.docx
+docs\corpus\KnowFlow_Corpus_V1.0\04_差旅管理制度_V2.0_已失效.docx
+docs\corpus\KnowFlow_Corpus_V1.0\05_差旅管理制度_V2.1_生效.docx
+docs\corpus\KnowFlow_Corpus_V1.0\06_差旅住宿补充说明_V1.0_生效_冲突样本.docx
+docs\corpus\KnowFlow_Corpus_V1.0\07_费用报销FAQ_V1.2_生效.docx
+docs\corpus\KnowFlow_Corpus_V1.0\08_产品A退款规则_V1.0_已失效.docx
+docs\corpus\KnowFlow_Corpus_V1.0\09_产品A退款规则_V2.0_生效.docx
+docs\corpus\KnowFlow_Corpus_V1.0\10_客户投诉处理SOP_V3.0_生效.docx
+docs\corpus\KnowFlow_Corpus_V1.0\11_客服常见问题FAQ_V2.0_生效.docx
+docs\corpus\KnowFlow_Corpus_V1.0\12_年度预算调整审批办法_V1.0_受限.docx
+docs\corpus\KnowFlow_Corpus_V1.0\13_新员工入职指引_V1.5_生效.docx
+docs\corpus\KnowFlow_Corpus_V1.0\14_信息安全与账号使用规范_V2.3_生效.docx
