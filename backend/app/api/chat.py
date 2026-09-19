@@ -1,17 +1,21 @@
 from fastapi import APIRouter
 
-from app.core.permission_filter import (
-    check_route_permission,
-)
-from app.core.query_time_resolver import (
-    resolve_query_time,
+from app.core.retrieval_scope import (
+    build_retrieval_scope,
 )
 from app.core.router_service import (
     route_query,
 )
+from app.db.vector_store import (
+    load_chunks_by_document_ids,
+)
+from app.retrieval.hybrid_retriever_db import (
+    hybrid_retrieve_scoped,
+)
 from app.schemas.chat import (
     ChatRequest,
     ChatResponse,
+    EvidenceDebug,
 )
 
 
@@ -22,97 +26,144 @@ router = APIRouter(tags=["Chat"])
     "/chat",
     response_model=ChatResponse,
 )
-def chat(request: ChatRequest):
-    """
-    KnowFlow 当前阶段问答入口。
+def chat(
+    request: ChatRequest,
+):
 
-    当前执行链路：
-
-    1. S3 Router
-       - Domain
-       - Finance Sensitivity
-       - Version Mode
-
-    2. S4 Permission
-       - Finance Restricted 权限检查
-       - no_access 时立即终止
-
-    3. S5 Query Time Resolver
-       - exact_date
-       - period
-       - request_time
-       - comparison
-
-    当前尚未执行：
-    - S5 Document Version Filter
-    - S6 Hybrid Retrieval
-    - S7 Evidence Judge
-    - Answer Generation
-    - Citation Assembler
-    """
-
-    # ==================================================
-    # S3: Router
-    # ==================================================
+    # =================================
+    # S3 Router
+    # =================================
     routing = route_query(
         request.query
     )
 
-    # ==================================================
-    # S4: Permission Check
-    # ==================================================
-    permission = check_route_permission(
+    domain = routing["domain"]
+
+    sensitivity = routing.get(
+        "sensitivity"
+    )
+
+    version_mode = routing.get(
+        "version_mode"
+    )
+
+    # =================================
+    # Frozen Other branch
+    # =================================
+    if domain == "Other":
+
+        return ChatResponse(
+            status="out_of_scope",
+            query=request.query,
+            domain=domain,
+            sensitivity=sensitivity,
+            version_mode=version_mode,
+            permission_decision="allowed",
+            message=(
+                "Query is outside the "
+                "supported enterprise "
+                "knowledge domains. "
+                "Evidence Judge is not "
+                "executed yet."
+            ),
+        )
+
+    # =================================
+    # S4 + S5 Scope
+    # =================================
+    scope = build_retrieval_scope(
+        query=request.query,
         routing=routing,
         user=request.user,
     )
 
-    # --------------------------------------------------
-    # 权限不足：立即结束
-    #
-    # 注意：
-    # no_access 属于 Permission Layer，
-    # 不进入后续 Version / Retrieval / LLM。
-    # --------------------------------------------------
-    if permission.decision == "no_access":
+    # =================================
+    # no_access 必须在 Retrieval 前返回
+    # =================================
+    if (
+        scope[
+            "permission_decision"
+        ]
+        == "no_access"
+    ):
+
         return ChatResponse(
             status="no_access",
             query=request.query,
-            domain=routing["domain"],
-            sensitivity=routing[
-                "sensitivity"
-            ],
-            version_mode=routing[
-                "version_mode"
-            ],
+            domain=domain,
+            sensitivity=sensitivity,
+            version_mode=version_mode,
             permission_decision=(
                 "no_access"
             ),
-            query_date=None,
-            time_selector=None,
-            period_start=None,
-            period_end=None,
             message=(
                 "存在可能相关的受限知识，"
                 "但当前账户没有对应访问权限。"
             ),
         )
 
-    # ==================================================
-    # S5: Query Time Resolver
-    # ==================================================
-    time_context = None
+    allowed_document_ids = (
+        scope[
+            "allowed_document_ids"
+        ]
+    )
 
-    if routing["version_mode"] is not None:
-        time_context = resolve_query_time(
-            query=request.query,
-            version_mode=routing[
-                "version_mode"
-            ],
+    # =================================
+    # 只加载 S4/S5 允许的 Chunk
+    # =================================
+    allowed_chunks = (
+        load_chunks_by_document_ids(
+            allowed_document_ids
         )
+    )
 
-    # ==================================================
-    # 将时间上下文转换成 API 可返回格式
-    # ==================================================
+    # =================================
+    # S6 Hybrid Retrieval
+    # =================================
+    retrieval = (
+        hybrid_retrieve_scoped(
+            query=request.query,
+            allowed_chunks=(
+                allowed_chunks
+            ),
+            allowed_document_ids=(
+                allowed_document_ids
+            ),
+            top_n=20,
+            top_k=10,
+        )
+    )
+
+    evidence = [
+        EvidenceDebug(
+            chunk_id=item.chunk_id,
+            document_id=(
+                item.document_id
+            ),
+            text=item.text,
+            page=item.page,
+            section=item.section,
+            retrieval_source=(
+                item.retrieval_source
+            ),
+            raw_score=(
+                item.raw_score
+            ),
+            fused_score=(
+                item.fused_score
+            ),
+            rerank_score=(
+                item.rerank_score
+            ),
+        )
+        for item in (
+            retrieval.reranked_candidates
+        )
+    ]
+
+    time_context = scope[
+        "time_context"
+    ]
 
     query_date = None
     time_selector = None
@@ -155,33 +206,35 @@ def chat(request: ChatRequest):
                 .isoformat()
             )
 
-    # ==================================================
-    # 当前阶段正常返回
-    #
-    # 注意：
-    # 这里仍然没有真正检索知识库，
-    # 所以不能回答用户的企业知识问题。
-    # ==================================================
     return ChatResponse(
-        status="version_context_resolved",
+        status="retrieval_complete",
         query=request.query,
-        domain=routing["domain"],
-        sensitivity=routing[
-            "sensitivity"
-        ],
-        version_mode=routing[
-            "version_mode"
-        ],
-        permission_decision="allowed",
+        domain=domain,
+        sensitivity=sensitivity,
+        version_mode=version_mode,
+        permission_decision=(
+            "allowed"
+        ),
+        message=(
+            "S6 hybrid retrieval complete. "
+            "Evidence Judge and Answer "
+            "Generator are not executed yet."
+        ),
         query_date=query_date,
         time_selector=time_selector,
         period_start=period_start,
         period_end=period_end,
-        message=(
-            "S5 query time resolved. "
-            "Document Version Filter, "
-            "Hybrid Retrieval and "
-            "Evidence Judge are not "
-            "executed yet."
+        current_document_ids=scope[
+            "current_document_ids"
+        ],
+        historical_document_ids=scope[
+            "historical_document_ids"
+        ],
+        allowed_document_ids=(
+            allowed_document_ids
         ),
+        evidence_count=len(
+            evidence
+        ),
+        evidence=evidence,
     )

@@ -1,5 +1,5 @@
 from collections.abc import Iterable
-
+from app.models import Chunk
 from app.db.connection import get_connection
 from app.models import (
     Chunk,
@@ -199,3 +199,55 @@ def delete_document_chunks(
         conn.commit()
 
     return deleted
+
+def load_chunks_by_document_ids(
+    document_ids: list[str],
+) -> list[Chunk]:
+    """
+    为 BM25 加载已经通过
+    Domain + Permission + Version
+    的真实 Chunk。
+
+    空 scope 必须返回 []，
+    不能变成全库查询。
+    """
+
+    if not document_ids:
+        return []
+
+    sql = """
+    SELECT
+        chunk_id,
+        document_id,
+        text,
+        page,
+        section,
+        chunk_index
+    FROM chunk_embeddings
+    WHERE document_id = ANY(%s)
+    ORDER BY
+        document_id,
+        chunk_index;
+    """
+
+    with get_connection() as conn:
+        with conn.cursor() as cur:
+
+            cur.execute(
+                sql,
+                (document_ids,),
+            )
+
+            rows = cur.fetchall()
+
+    return [
+        Chunk(
+            chunk_id=row[0],
+            document_id=row[1],
+            text=row[2],
+            page=row[3],
+            section=row[4],
+            chunk_index=row[5],
+        )
+        for row in rows
+    ]
