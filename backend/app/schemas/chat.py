@@ -54,6 +54,12 @@ class ChatResponse(BaseModel):
     period_start: str | None = None
     period_end: str | None = None
 
+    decision: str | None = None
+
+    reason: str | None = None
+
+    clarifying_question: str = ""
+
     current_document_ids: list[str] = Field(
         default_factory=list
     )
@@ -69,5 +75,13 @@ class ChatResponse(BaseModel):
     evidence_count: int = 0
 
     evidence: list[EvidenceDebug] = Field(
+        default_factory=list
+    )
+
+    evidence_ids: list[str] = Field(
+    default_factory=list
+    )
+
+    risk_flags: list[str] = Field(
         default_factory=list
     )

@@ -190,3 +190,57 @@ def list_documents_by_route(
         )
         for row in rows
     ]
+
+def get_documents_by_ids(
+    document_ids: list[str],
+) -> list[Document]:
+
+    if not document_ids:
+        return []
+
+    sql = """
+    SELECT
+        document_id,
+        topic_id,
+        title,
+        version_no,
+        effective_at,
+        expired_at,
+        status,
+        department,
+        confidentiality,
+        allowed_roles,
+        kb_id
+    FROM documents
+    WHERE document_id = ANY(%s)
+    ORDER BY document_id;
+    """
+
+    with get_connection() as conn:
+        with conn.cursor() as cur:
+
+            cur.execute(
+                sql,
+                (document_ids,),
+            )
+
+            rows = cur.fetchall()
+
+    return [
+        Document(
+            document_id=row[0],
+            topic_id=row[1],
+            title=row[2],
+            version_no=row[3],
+            effective_at=row[4],
+            expired_at=row[5],
+            status=row[6],
+            department=row[7],
+            confidentiality=row[8],
+            allowed_roles=list(
+                row[9] or []
+            ),
+            kb_id=row[10],
+        )
+        for row in rows
+    ]

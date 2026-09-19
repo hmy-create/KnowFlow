@@ -14,6 +14,10 @@ from app.models.retrieval import (
     RetrievalCandidate,
     HybridRetrievalResult,
 )
+from app.models.evidence import (
+    EvidenceDecision,
+)
+
 
 __all__ = [
     "User",
@@ -27,4 +31,5 @@ __all__ = [
     "VersionFilterResult",
     "RetrievalCandidate",
     "HybridRetrievalResult",
+    "EvidenceDecision",
 ]
