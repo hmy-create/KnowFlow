@@ -23,3 +23,9 @@ class EvidenceDecision(BaseModel):
     risk_flags: list[str] = Field(
         default_factory=list
     )
+    input_tokens: int = 0
+    output_tokens: int = 0
+
+    model_name: str | None = None
+
+    prompt_version: str = "baseline-v1"

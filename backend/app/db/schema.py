@@ -117,4 +117,85 @@ def init_database():
                 CREATE_DOCUMENT_INDEX_SQL
             )
 
+            cur.execute(
+                CREATE_TRACES_TABLE_SQL
+            )
+
+            cur.execute(
+                CREATE_TRACES_CREATED_INDEX_SQL
+            )
+
+            cur.execute(
+                CREATE_TRACES_DOMAIN_INDEX_SQL
+            )
+
         conn.commit()
+
+CREATE_TRACES_TABLE_SQL = """
+CREATE TABLE IF NOT EXISTS traces (
+    trace_id TEXT PRIMARY KEY,
+
+    created_at TIMESTAMPTZ NOT NULL
+        DEFAULT NOW(),
+
+    query TEXT NOT NULL,
+    user_id TEXT NOT NULL,
+
+    domain TEXT NOT NULL,
+    sensitivity TEXT,
+    version_mode TEXT,
+    query_date DATE,
+
+    permission_filter JSONB NOT NULL
+        DEFAULT '{}'::jsonb,
+
+    version_filter JSONB NOT NULL
+        DEFAULT '{}'::jsonb,
+
+    retrieved_chunks JSONB NOT NULL
+        DEFAULT '[]'::jsonb,
+
+    rerank_scores JSONB NOT NULL
+        DEFAULT '[]'::jsonb,
+
+    decision TEXT NOT NULL,
+
+    decision_reason TEXT NOT NULL
+        DEFAULT '',
+
+    clarifying_question TEXT NOT NULL
+        DEFAULT '',
+
+    evidence_ids TEXT[] NOT NULL
+        DEFAULT '{}',
+
+    citations JSONB NOT NULL
+        DEFAULT '[]'::jsonb,
+
+    latency_ms INTEGER NOT NULL
+        DEFAULT 0,
+
+    input_tokens INTEGER NOT NULL
+        DEFAULT 0,
+
+    output_tokens INTEGER NOT NULL
+        DEFAULT 0,
+
+    prompt_version TEXT NOT NULL
+        DEFAULT 'baseline-v1'
+);
+"""
+
+
+CREATE_TRACES_CREATED_INDEX_SQL = """
+CREATE INDEX IF NOT EXISTS
+idx_traces_created_at
+ON traces(created_at DESC);
+"""
+
+
+CREATE_TRACES_DOMAIN_INDEX_SQL = """
+CREATE INDEX IF NOT EXISTS
+idx_traces_domain
+ON traces(domain);
+"""

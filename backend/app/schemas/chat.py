@@ -1,7 +1,7 @@
 from pydantic import BaseModel, Field
 
 from app.models import User
-
+from app.models import Citation
 
 class ChatRequest(BaseModel):
     query: str = Field(
@@ -83,5 +83,15 @@ class ChatResponse(BaseModel):
     )
 
     risk_flags: list[str] = Field(
+        default_factory=list
+    )
+
+    trace_id: str | None = None
+
+    citation_ids: list[str] = Field(
+        default_factory=list
+    )
+
+    citations: list[Citation] = Field(
         default_factory=list
     )

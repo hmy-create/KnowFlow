@@ -1,7 +1,7 @@
 from app.models.user import User
 from app.models.document import Document
 from app.models.chunk import Chunk
-from app.models.trace import Trace
+from app.models.trace import Trace, TraceRecord
 from app.models.eval import EvalCase
 from app.models.badcase import Badcase
 from app.models.permission import PermissionResult
@@ -17,13 +17,14 @@ from app.models.retrieval import (
 from app.models.evidence import (
     EvidenceDecision,
 )
-
+from app.models.citation import Citation
 
 __all__ = [
     "User",
     "Document",
     "Chunk",
     "Trace",
+    "TraceRecord",
     "EvalCase",
     "Badcase",
     "PermissionResult",
@@ -32,4 +33,5 @@ __all__ = [
     "RetrievalCandidate",
     "HybridRetrievalResult",
     "EvidenceDecision",
+    "Citation",
 ]

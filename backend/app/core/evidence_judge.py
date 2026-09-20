@@ -38,6 +38,9 @@ DOMAIN_PROMPTS = {
 }
 
 
+PROMPT_VERSION = "baseline-v1"
+
+
 MIGRATION_OUTPUT_CONTRACT = """
 在不改变以上冻结判定规则的前提下，
 FastAPI 迁移要求你只输出 JSON。
@@ -123,6 +126,7 @@ def _extract_json(
         raw[first:last + 1]
     )
 
+
 def _normalize_evidence_id(
     evidence_id: str,
 ) -> str:
@@ -140,6 +144,70 @@ def _normalize_evidence_id(
 
     return value
 
+
+def _extract_usage_tokens(
+    response,
+) -> tuple[int, int]:
+    """
+    从 LLM Response 中提取真实 Token 使用量。
+
+    优先兼容 OpenAI-compatible 字段：
+        prompt_tokens
+        completion_tokens
+
+    同时兼容部分 SDK 可能提供的：
+        input_tokens
+        output_tokens
+
+    如果 SDK 没有返回 usage，
+    则安全返回 0, 0。
+    """
+
+    usage = getattr(
+        response,
+        "usage",
+        None,
+    )
+
+    if usage is None:
+        return 0, 0
+
+    input_tokens = (
+        getattr(
+            usage,
+            "prompt_tokens",
+            None,
+        )
+    )
+
+    if input_tokens is None:
+        input_tokens = getattr(
+            usage,
+            "input_tokens",
+            0,
+        )
+
+    output_tokens = (
+        getattr(
+            usage,
+            "completion_tokens",
+            None,
+        )
+    )
+
+    if output_tokens is None:
+        output_tokens = getattr(
+            usage,
+            "output_tokens",
+            0,
+        )
+
+    return (
+        int(input_tokens or 0),
+        int(output_tokens or 0),
+    )
+
+
 def judge_current_evidence(
     query: str,
     domain: str,
@@ -149,6 +217,14 @@ def judge_current_evidence(
     query_time_summary: str = "",
 ) -> EvidenceDecision:
 
+    # ============================================================
+    # 无 Evidence
+    #
+    # 不调用 LLM，因此：
+    # input_tokens = 0
+    # output_tokens = 0
+    # model_name = None
+    # ============================================================
     if not evidence:
         return EvidenceDecision(
             decision="refuse",
@@ -158,8 +234,17 @@ def judge_current_evidence(
             ),
             clarifying_question="",
             evidence_ids=[],
+            input_tokens=0,
+            output_tokens=0,
+            model_name=None,
+            prompt_version=(
+                PROMPT_VERSION
+            ),
         )
 
+    # ============================================================
+    # LLM Configuration
+    # ============================================================
     api_key = os.getenv(
         "ZHIPUAI_API_KEY"
     )
@@ -178,22 +263,30 @@ def judge_current_evidence(
         api_key=api_key
     )
 
+    # ============================================================
+    # Frozen Evidence Judge Prompt
+    # ============================================================
     frozen_prompt = (
         load_evidence_prompt(domain)
     )
 
+    # ============================================================
+    # Build Evidence Context
+    # ============================================================
     evidence_context = (
         build_evidence_context(
             evidence
         )
     )
 
-    evidence_marker = "【企业知识库证据】"
+    evidence_marker = (
+        "【企业知识库证据】"
+    )
 
     if evidence_marker in frozen_prompt:
 
         # 如果冻结 Prompt 本身预留了证据位置，
-        # 就把真实 Evidence 注入该位置。
+        # 将真实 Evidence 注入该位置。
         prompt_with_context = (
             frozen_prompt.replace(
                 evidence_marker,
@@ -208,18 +301,27 @@ def judge_current_evidence(
 
     else:
 
-        # 某些冻结 Prompt 没有显式证据 marker。
-        # 不修改其原有业务规则，
-        # 只在末尾追加经过 S4/S5/S6
-        # 筛选后的真实企业证据。
+        # 部分冻结 Prompt 没有显式 Evidence Marker。
+        #
+        # 不修改冻结业务判断规则，
+        # 只在 Prompt 末尾附加经过：
+        #
+        # S4 Permission
+        # S5 Version
+        # S6 Retrieval
+        #
+        # 过滤后的真实企业证据。
         prompt_with_context = (
             frozen_prompt
             + "\n\n"
-            + "【企业知识库证据】"
+            + evidence_marker
             + "\n"
             + evidence_context
         )
 
+    # ============================================================
+    # S7 Migration Output Contract
+    # ============================================================
     system_prompt = (
         prompt_with_context
         + "\n\n"
@@ -227,23 +329,27 @@ def judge_current_evidence(
     )
 
     user_message = f"""
-    用户问题：
-    {query}
+用户问题：
+{query}
 
-    查询时间上下文：
-    {query_time_summary or "未额外提供"}
+查询时间上下文：
+{query_time_summary or "未额外提供"}
 
-    请严格依据系统消息中提供的企业知识库证据，
-    只进行 Evidence State 判断。
-    """
+请严格依据系统消息中提供的企业知识库证据，
+只进行 Evidence State 判断。
+"""
 
+    # ============================================================
+    # Call Frozen LLM Judge
+    # ============================================================
     response = (
         client.chat.completions.create(
             model=model,
 
-            # FastAPI 迁移为了结构化回归稳定性
-            # 使用确定性输出；
-            # 不修改冻结业务决策规则。
+            # FastAPI 迁移为了结构化回归稳定性，
+            # 使用确定性输出。
+            #
+            # 不修改冻结业务决策逻辑。
             temperature=0.0,
 
             messages=[
@@ -261,23 +367,49 @@ def judge_current_evidence(
         )
     )
 
+    # ============================================================
+    # S8 Token Usage
+    #
+    # 必须在拿到 Response 后立即提取，
+    # 保存真实 LLM Token 使用量。
+    # ============================================================
+    (
+        input_tokens,
+        output_tokens,
+    ) = _extract_usage_tokens(
+        response
+    )
+
+    # ============================================================
+    # LLM Raw Output
+    # ============================================================
     raw = (
         response
         .choices[0]
         .message
         .content
     )
+
+    # ============================================================
+    # Debug
+    #
+    # 目前保留，便于 S8/S9 回归。
+    # 后续生产版可改为标准 Logging。
+    # ============================================================
     print("")
+
     print(
         f"[Evidence Judge Debug] "
         f"domain={domain}"
     )
+
     print(
         f"[Evidence Judge Debug] "
         f"query={query}"
     )
 
     for item in evidence:
+
         print(
             "[Evidence Judge Debug] "
             f"chunk={item.chunk_id} | "
@@ -296,8 +428,34 @@ def judge_current_evidence(
         f"raw={raw}"
     )
 
-    payload = _extract_json(raw)
+    # S8 增加 Token Debug，
+    # 方便确认真实 Usage 已经读取。
+    print(
+        "[Evidence Judge Debug] "
+        f"model={model} | "
+        f"input_tokens={input_tokens} | "
+        f"output_tokens={output_tokens} | "
+        f"prompt_version={PROMPT_VERSION}"
+    )
 
+    # ============================================================
+    # Parse Structured JSON
+    # ============================================================
+    payload = _extract_json(
+        raw
+    )
+
+    # ============================================================
+    # Normalize Evidence IDs
+    #
+    # LLM 有时可能返回：
+    #
+    # EVIDENCE_ID=XXX
+    #
+    # 工程内部统一转换成：
+    #
+    # XXX
+    # ============================================================
     raw_evidence_ids = (
         payload.get(
             "evidence_ids",
@@ -313,24 +471,56 @@ def judge_current_evidence(
         in raw_evidence_ids
     ]
 
-
+    # ============================================================
+    # Build Evidence Decision
+    #
+    # S8 新增：
+    #
+    # input_tokens
+    # output_tokens
+    # model_name
+    # prompt_version
+    # ============================================================
     decision = EvidenceDecision(
-        decision=payload["decision"],
-        reason=payload["reason"],
+        decision=payload[
+            "decision"
+        ],
+
+        reason=payload[
+            "reason"
+        ],
+
         clarifying_question=(
             payload.get(
                 "clarifying_question",
                 "",
             )
         ),
+
         evidence_ids=(
             normalized_evidence_ids
         ),
+
+        input_tokens=(
+            input_tokens
+        ),
+
+        output_tokens=(
+            output_tokens
+        ),
+
+        model_name=model,
+
+        prompt_version=(
+            PROMPT_VERSION
+        ),
     )
 
-    # -----------------------------
-    # 输出约束校验
-    # -----------------------------
+    # ============================================================
+    # Evidence ID Output Validation
+    #
+    # LLM 不允许引用不存在的 Evidence。
+    # ============================================================
     valid_ids = {
         item.chunk_id
         for item in evidence
@@ -358,6 +548,11 @@ def judge_current_evidence(
             "invalid_evidence_id_removed"
         )
 
+    # ============================================================
+    # Clarifying Question Constraint
+    #
+    # 只有 clarify 才允许存在澄清问题。
+    # ============================================================
     if (
         decision.decision
         != "clarify"

@@ -1,7 +1,13 @@
+import time
+import uuid
+
 from fastapi import APIRouter
 
 from app.core.evidence_state_machine import (
     decide_evidence_state,
+)
+from app.core.response_assembler import (
+    assemble_citations,
 )
 from app.core.retrieval_scope import (
     build_retrieval_scope,
@@ -9,8 +15,14 @@ from app.core.retrieval_scope import (
 from app.core.router_service import (
     route_query,
 )
+from app.db.trace_repository import (
+    save_trace,
+)
 from app.db.vector_store import (
     load_chunks_by_document_ids,
+)
+from app.models import (
+    TraceRecord,
 )
 from app.retrieval.hybrid_retriever_db import (
     hybrid_retrieve_scoped,
@@ -25,6 +37,243 @@ from app.schemas.chat import (
 router = APIRouter(tags=["Chat"])
 
 
+# ================================================================
+# S8 Trace Helpers
+# ================================================================
+def _new_trace_id() -> str:
+
+    return (
+        "TR-"
+        + uuid.uuid4().hex.upper()
+    )
+
+
+def _elapsed_ms(
+    started_at: float,
+) -> int:
+
+    value = int(
+        (
+            time.perf_counter()
+            - started_at
+        )
+        * 1000
+    )
+
+    # 极短路径也至少记为 1ms，
+    # 避免 Trace 中出现不可读的 0ms。
+    return max(
+        1,
+        value,
+    )
+
+
+def _json_safe(
+    value,
+):
+    """
+    把 numpy scalar 等对象转换为
+    PostgreSQL JSONB 可安全序列化的类型。
+    """
+
+    if value is None:
+        return None
+
+    if isinstance(
+        value,
+        (
+            str,
+            int,
+            float,
+            bool,
+        ),
+    ):
+        return value
+
+    if isinstance(
+        value,
+        dict,
+    ):
+        return {
+            str(key):
+                _json_safe(item)
+            for key, item
+            in value.items()
+        }
+
+    if isinstance(
+        value,
+        (
+            list,
+            tuple,
+        ),
+    ):
+        return [
+            _json_safe(item)
+            for item in value
+        ]
+
+    # numpy scalar 通常支持 .item()
+    if hasattr(
+        value,
+        "item",
+    ):
+        try:
+            return _json_safe(
+                value.item()
+            )
+        except Exception:
+            pass
+
+    return str(value)
+
+
+def _extract_time_context(
+    scope: dict,
+):
+
+    time_context = scope.get(
+        "time_context"
+    )
+
+    query_date = None
+    trace_query_date = None
+
+    time_selector = None
+    period_start = None
+    period_end = None
+
+    query_time_summary = ""
+
+    if time_context is None:
+
+        return (
+            query_date,
+            trace_query_date,
+            time_selector,
+            period_start,
+            period_end,
+            query_time_summary,
+        )
+
+    time_selector = (
+        time_context.selector
+    )
+
+    if (
+        time_context.query_date
+        is not None
+    ):
+        trace_query_date = (
+            time_context.query_date
+        )
+
+        query_date = (
+            time_context
+            .query_date
+            .isoformat()
+        )
+
+    if (
+        time_context.period_start
+        is not None
+    ):
+        period_start = (
+            time_context
+            .period_start
+            .isoformat()
+        )
+
+    if (
+        time_context.period_end
+        is not None
+    ):
+        period_end = (
+            time_context
+            .period_end
+            .isoformat()
+        )
+
+    query_time_summary = (
+        f"selector={time_selector}; "
+        f"query_date={query_date}; "
+        f"period_start={period_start}; "
+        f"period_end={period_end}"
+    )
+
+    return (
+        query_date,
+        trace_query_date,
+        time_selector,
+        period_start,
+        period_end,
+        query_time_summary,
+    )
+
+
+def _build_retrieved_chunks(
+    candidates,
+) -> list[dict]:
+
+    return [
+        {
+            "chunk_id":
+                item.chunk_id,
+
+            "document_id":
+                item.document_id,
+
+            "page":
+                item.page,
+
+            "section":
+                item.section,
+
+            "retrieval_source":
+                item.retrieval_source,
+
+            "raw_score":
+                _json_safe(
+                    item.raw_score
+                ),
+
+            "fused_score":
+                _json_safe(
+                    item.fused_score
+                ),
+
+            "rerank_score":
+                _json_safe(
+                    item.rerank_score
+                ),
+        }
+
+        for item in candidates
+    ]
+
+
+def _build_rerank_scores(
+    candidates,
+) -> list[dict]:
+
+    return [
+        {
+            "chunk_id":
+                item.chunk_id,
+
+            "score":
+                _json_safe(
+                    item.rerank_score
+                ),
+        }
+
+        for item in candidates
+    ]
+
+
+# ================================================================
+# /chat
+# ================================================================
 @router.post(
     "/chat",
     response_model=ChatResponse,
@@ -34,13 +283,26 @@ def chat(
 ):
 
     # ============================================================
+    # S8 Trace 从请求进入的第一刻开始计时
+    # ============================================================
+    started_at = (
+        time.perf_counter()
+    )
+
+    trace_id = (
+        _new_trace_id()
+    )
+
+    # ============================================================
     # S3 Router
     # ============================================================
     routing = route_query(
         request.query
     )
 
-    domain = routing["domain"]
+    domain = routing[
+        "domain"
+    ]
 
     sensitivity = routing.get(
         "sensitivity"
@@ -51,18 +313,91 @@ def chat(
     )
 
     # ============================================================
-    # Frozen Other branch
+    # Frozen Other Branch
     #
-    # Other 属于知识库范围外问题：
-    # - 不进入 Permission / Version
-    # - 不进入 Retrieval
-    # - 不调用 Evidence Judge
-    # - S7 decision = refuse
+    # S8 要求：
+    # Other 即使不进行 Retrieval，
+    # 也必须生成 Trace。
     # ============================================================
     if domain == "Other":
 
+        reason = (
+            "当前问题不属于本企业知识库"
+            "能够支持的业务知识范围，"
+            "没有可靠的企业知识证据"
+            "可以用于回答。"
+        )
+
+        latency_ms = (
+            _elapsed_ms(
+                started_at
+            )
+        )
+
+        trace = TraceRecord(
+            trace_id=trace_id,
+
+            query=request.query,
+
+            user_id=(
+                request.user.user_id
+            ),
+
+            domain=domain,
+
+            sensitivity=sensitivity,
+
+            version_mode=version_mode,
+
+            query_date=None,
+
+            permission_filter={
+                "permission_decision":
+                    "not_applicable",
+                "reason":
+                    "domain_other",
+            },
+
+            version_filter={
+                "version_mode":
+                    version_mode,
+                "time_selector":
+                    None,
+            },
+
+            retrieved_chunks=[],
+
+            rerank_scores=[],
+
+            decision="refuse",
+
+            decision_reason=reason,
+
+            clarifying_question="",
+
+            evidence_ids=[],
+
+            citations=[],
+
+            latency_ms=latency_ms,
+
+            input_tokens=0,
+
+            output_tokens=0,
+
+            prompt_version=(
+                "baseline-v1"
+            ),
+        )
+
+        save_trace(
+            trace
+        )
+
         return ChatResponse(
             status="out_of_scope",
+
+            trace_id=trace_id,
 
             query=request.query,
 
@@ -72,16 +407,13 @@ def chat(
 
             version_mode=version_mode,
 
-            permission_decision="allowed",
+            permission_decision=(
+                "allowed"
+            ),
 
             decision="refuse",
 
-            reason=(
-                "当前问题不属于本企业知识库"
-                "能够支持的业务知识范围，"
-                "没有可靠的企业知识证据"
-                "可以用于回答。"
-            ),
+            reason=reason,
 
             clarifying_question="",
 
@@ -89,11 +421,15 @@ def chat(
 
             risk_flags=[],
 
+            citation_ids=[],
+
+            citations=[],
+
             message=(
                 "Query is outside the "
                 "supported enterprise "
                 "knowledge domains. "
-                "S7 decision is refuse. "
+                "S8 trace recorded. "
                 "Final Answer Generator "
                 "is not executed yet."
             ),
@@ -123,25 +459,130 @@ def chat(
     ]
 
     # ============================================================
+    # S5 Time Context
+    #
+    # 提前提取，是为了 no_access Trace
+    # 也能够记录请求时间语义，
+    # 但不记录任何受限 Document / Chunk。
+    # ============================================================
+    (
+        query_date,
+        trace_query_date,
+        time_selector,
+        period_start,
+        period_end,
+        query_time_summary,
+    ) = _extract_time_context(
+        scope
+    )
+
+    # ============================================================
     # S4 no_access
     #
-    # 必须在 Retrieval 之前返回。
+    # 必须在 Retrieval 之前直接返回。
     #
-    # 重要：
-    # - 不加载 private chunks
-    # - 不运行 BM25
-    # - 不运行 pgvector
-    # - 不运行 Reranker
-    # - 不调用 Evidence Judge
-    # - 不泄漏文档标题、金额、审批链等内容
+    # S8 Trace 同样不得让 Private Chunk
+    # 为了“记录 Trace”而重新进入系统。
     # ============================================================
     if (
         permission_decision
         == "no_access"
     ):
 
+        reason = (
+            "当前身份没有访问相关"
+            "受限企业知识的权限。"
+        )
+
+        latency_ms = (
+            _elapsed_ms(
+                started_at
+            )
+        )
+
+        trace = TraceRecord(
+            trace_id=trace_id,
+
+            query=request.query,
+
+            user_id=(
+                request.user.user_id
+            ),
+
+            domain=domain,
+
+            sensitivity=sensitivity,
+
+            version_mode=version_mode,
+
+            query_date=(
+                trace_query_date
+            ),
+
+            permission_filter={
+                "permission_decision":
+                    "no_access",
+
+                "department":
+                    request.user.department,
+
+                "role":
+                    request.user.role,
+            },
+
+            # 注意：
+            # no_access Trace 不保存
+            # private document ids。
+            version_filter={
+                "version_mode":
+                    version_mode,
+
+                "time_selector":
+                    time_selector,
+
+                "query_date":
+                    query_date,
+
+                "period_start":
+                    period_start,
+
+                "period_end":
+                    period_end,
+            },
+
+            retrieved_chunks=[],
+
+            rerank_scores=[],
+
+            decision="no_access",
+
+            decision_reason=reason,
+
+            clarifying_question="",
+
+            evidence_ids=[],
+
+            citations=[],
+
+            latency_ms=latency_ms,
+
+            input_tokens=0,
+
+            output_tokens=0,
+
+            prompt_version=(
+                "baseline-v1"
+            ),
+        )
+
+        save_trace(
+            trace
+        )
+
         return ChatResponse(
             status="no_access",
+
+            trace_id=trace_id,
 
             query=request.query,
 
@@ -151,14 +592,13 @@ def chat(
 
             version_mode=version_mode,
 
-            permission_decision="no_access",
+            permission_decision=(
+                "no_access"
+            ),
 
             decision="no_access",
 
-            reason=(
-                "当前身份没有访问相关"
-                "受限企业知识的权限。"
-            ),
+            reason=reason,
 
             clarifying_question="",
 
@@ -166,10 +606,22 @@ def chat(
 
             risk_flags=[],
 
+            citation_ids=[],
+
+            citations=[],
+
             message=(
                 "存在可能相关的受限知识，"
                 "但当前账户没有对应访问权限。"
             ),
+
+            query_date=query_date,
+
+            time_selector=time_selector,
+
+            period_start=period_start,
+
+            period_end=period_end,
 
             current_document_ids=[],
 
@@ -183,26 +635,28 @@ def chat(
         )
 
     # ============================================================
-    # S5 输出：
-    # Permission + Version 过滤后真正允许进入检索的 Documents
+    # S5 Permission + Version 最终允许进入 S6 的 Documents
     # ============================================================
-    allowed_document_ids = scope[
-        "allowed_document_ids"
-    ]
+    allowed_document_ids = list(
+        scope[
+            "allowed_document_ids"
+        ]
+    )
+
+    current_document_ids = list(
+        scope[
+            "current_document_ids"
+        ]
+    )
+
+    historical_document_ids = list(
+        scope[
+            "historical_document_ids"
+        ]
+    )
 
     # ============================================================
-    # 只加载 S4 / S5 允许的真实 Chunk
-    #
-    # 即：
-    # Router
-    #   ↓
-    # Permission
-    #   ↓
-    # Version
-    #   ↓
-    # allowed_document_ids
-    #   ↓
-    # Chunk
+    # S6 只加载 S4 / S5 已允许的 Chunk
     # ============================================================
     allowed_chunks = (
         load_chunks_by_document_ids(
@@ -219,7 +673,7 @@ def chat(
     # ↓
     # RRF
     # ↓
-    # Reranker
+    # BGE Reranker
     # ↓
     # Top-K Evidence
     # ============================================================
@@ -241,18 +695,13 @@ def chat(
         )
     )
 
-    # ============================================================
-    # 保存真正进入 S7 的 RetrievalCandidate
-    # ============================================================
-    retrieval_candidates = (
-        retrieval.reranked_candidates
+    retrieval_candidates = list(
+        retrieval
+        .reranked_candidates
     )
 
     # ============================================================
-    # S6 Evidence Debug
-    #
-    # 这些字段继续返回给 Swagger，
-    # 方便检查 Retrieval 实际召回了什么。
+    # S6 Swagger Evidence Debug
     # ============================================================
     evidence = [
         EvidenceDebug(
@@ -289,80 +738,7 @@ def chat(
     ]
 
     # ============================================================
-    # S5 Query Time Context
-    # ============================================================
-    time_context = scope[
-        "time_context"
-    ]
-
-    query_date = None
-    time_selector = None
-    period_start = None
-    period_end = None
-
-    query_time_summary = ""
-
-    if time_context is not None:
-
-        time_selector = (
-            time_context.selector
-        )
-
-        if (
-            time_context.query_date
-            is not None
-        ):
-            query_date = (
-                time_context
-                .query_date
-                .isoformat()
-            )
-
-        if (
-            time_context.period_start
-            is not None
-        ):
-            period_start = (
-                time_context
-                .period_start
-                .isoformat()
-            )
-
-        if (
-            time_context.period_end
-            is not None
-        ):
-            period_end = (
-                time_context
-                .period_end
-                .isoformat()
-            )
-
-        # 给 S7 Evidence Judge 的时间上下文。
-        #
-        # 注意：
-        # 真正的 Version Filter 已经在 S5 完成，
-        # 这里是为了让 Judge 的 reason
-        # 能理解当前时间语义。
-        query_time_summary = (
-            f"selector={time_selector}; "
-            f"query_date={query_date}; "
-            f"period_start={period_start}; "
-            f"period_end={period_end}"
-        )
-
-    # ============================================================
     # S7 Evidence State Machine
-    #
-    # 已经完成：
-    #
-    # Finance deterministic conflict guard
-    # HR deterministic clarify guard
-    # Service deterministic clarify guard
-    # Product P-FIX / 其他语义判断 -> Frozen LLM Judge
-    #
-    # Historical / Comparison / Restricted
-    # 则继续遵守冻结 POC 分支逻辑。
     # ============================================================
     decision_result = (
         decide_evidence_state(
@@ -382,13 +758,13 @@ def chat(
                 retrieval_candidates
             ),
 
-            current_document_ids=scope[
-                "current_document_ids"
-            ],
+            current_document_ids=(
+                current_document_ids
+            ),
 
-            historical_document_ids=scope[
-                "historical_document_ids"
-            ],
+            historical_document_ids=(
+                historical_document_ids
+            ),
 
             query_time_summary=(
                 query_time_summary
@@ -397,22 +773,240 @@ def chat(
     )
 
     # ============================================================
-    # S7 完成
+    # S8 Citation Assembler
     #
-    # 当前仍然不生成最终业务 Answer。
+    # 注意：
+    # Citation 只允许从 S7 最终 evidence_ids
+    # 映射。
     #
-    # 当前接口只输出：
+    # 不允许 LLM 自己编文件名、版本、页码。
+    # ============================================================
+    citations = assemble_citations(
+        trace_id=trace_id,
+
+        evidence_ids=(
+            decision_result
+            .evidence_ids
+        ),
+    )
+
+    citation_ids = [
+        item.citation_id
+        for item in citations
+    ]
+
+    # ============================================================
+    # S8 Trace Retrieval Data
+    # ============================================================
+    retrieved_chunks = (
+        _build_retrieved_chunks(
+            retrieval_candidates
+        )
+    )
+
+    rerank_scores = (
+        _build_rerank_scores(
+            retrieval_candidates
+        )
+    )
+
+    # ============================================================
+    # S8 Token Usage
     #
-    # decision
-    # reason
-    # clarifying_question
-    # evidence_ids
-    # risk_flags
+    # Structured Guard:
+    #   0 / 0
     #
-    # + S3~S6 Debug Context
+    # LLM Judge:
+    #   使用 evidence_judge.py
+    #   返回的真实 usage。
+    # ============================================================
+    input_tokens = int(
+        getattr(
+            decision_result,
+            "input_tokens",
+            0,
+        )
+        or 0
+    )
+
+    output_tokens = int(
+        getattr(
+            decision_result,
+            "output_tokens",
+            0,
+        )
+        or 0
+    )
+
+    prompt_version = (
+        getattr(
+            decision_result,
+            "prompt_version",
+            "baseline-v1",
+        )
+        or "baseline-v1"
+    )
+
+    # ============================================================
+    # S8 Trace
+    # ============================================================
+    latency_ms = (
+        _elapsed_ms(
+            started_at
+        )
+    )
+
+    trace = TraceRecord(
+        trace_id=trace_id,
+
+        query=request.query,
+
+        user_id=(
+            request.user.user_id
+        ),
+
+        domain=domain,
+
+        sensitivity=sensitivity,
+
+        version_mode=version_mode,
+
+        query_date=(
+            trace_query_date
+        ),
+
+        # --------------------------------------------------------
+        # S4 Permission Trace
+        # --------------------------------------------------------
+        permission_filter={
+            "permission_decision":
+                permission_decision,
+
+            "department":
+                request.user.department,
+
+            "role":
+                request.user.role,
+
+            "authorized_kb_ids":
+                list(
+                    request
+                    .user
+                    .authorized_kb_ids
+                    or []
+                ),
+        },
+
+        # --------------------------------------------------------
+        # S5 Version Trace
+        # --------------------------------------------------------
+        version_filter={
+            "version_mode":
+                version_mode,
+
+            "time_selector":
+                time_selector,
+
+            "query_date":
+                query_date,
+
+            "period_start":
+                period_start,
+
+            "period_end":
+                period_end,
+
+            "current_document_ids":
+                current_document_ids,
+
+            "historical_document_ids":
+                historical_document_ids,
+
+            "allowed_document_ids":
+                allowed_document_ids,
+        },
+
+        # --------------------------------------------------------
+        # S6 Retrieval Trace
+        # --------------------------------------------------------
+        retrieved_chunks=(
+            retrieved_chunks
+        ),
+
+        rerank_scores=(
+            rerank_scores
+        ),
+
+        # --------------------------------------------------------
+        # S7 Decision Trace
+        # --------------------------------------------------------
+        decision=(
+            decision_result
+            .decision
+        ),
+
+        decision_reason=(
+            decision_result
+            .reason
+        ),
+
+        clarifying_question=(
+            decision_result
+            .clarifying_question
+        ),
+
+        evidence_ids=list(
+            decision_result
+            .evidence_ids
+        ),
+
+        # --------------------------------------------------------
+        # S8 Citation Trace
+        # --------------------------------------------------------
+        citations=(
+            citations
+        ),
+
+        latency_ms=latency_ms,
+
+        input_tokens=(
+            input_tokens
+        ),
+
+        output_tokens=(
+            output_tokens
+        ),
+
+        prompt_version=(
+            prompt_version
+        ),
+    )
+
+    # ============================================================
+    # Trace 持久化
+    #
+    # S8 阶段 Trace 是正式交付物，
+    # 因此存储失败时不要静默吞掉异常。
+    # ============================================================
+    save_trace(
+        trace
+    )
+
+    # ============================================================
+    # S8 Response
+    #
+    # 注意：
+    # 仍然没有最终 Answer Generator。
+    # S8 只增加：
+    #
+    # trace_id
+    # citation_ids
+    # citations
     # ============================================================
     return ChatResponse(
         status="decision_complete",
+
+        trace_id=trace_id,
 
         query=request.query,
 
@@ -427,11 +1021,13 @@ def chat(
         ),
 
         decision=(
-            decision_result.decision
+            decision_result
+            .decision
         ),
 
         reason=(
-            decision_result.reason
+            decision_result
+            .reason
         ),
 
         clarifying_question=(
@@ -449,12 +1045,19 @@ def chat(
             .risk_flags
         ),
 
+        citation_ids=(
+            citation_ids
+        ),
+
+        citations=(
+            citations
+        ),
+
         message=(
-            "S7 Evidence State Machine "
+            "S8 Citation & Trace "
             "completed. "
-            "Final Answer Generator and "
-            "Citation Assembler are not "
-            "executed yet."
+            "Final Answer Generator "
+            "is not executed yet."
         ),
 
         query_date=query_date,
@@ -465,13 +1068,13 @@ def chat(
 
         period_end=period_end,
 
-        current_document_ids=scope[
-            "current_document_ids"
-        ],
+        current_document_ids=(
+            current_document_ids
+        ),
 
-        historical_document_ids=scope[
-            "historical_document_ids"
-        ],
+        historical_document_ids=(
+            historical_document_ids
+        ),
 
         allowed_document_ids=(
             allowed_document_ids
