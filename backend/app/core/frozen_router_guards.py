@@ -119,35 +119,128 @@ def apply_frozen_version_guard(
     if domain == "Product":
 
         # --------------------------------------------------------
-        # “付款后10天”
-        # 是退款资格条件，不是历史查询时间。
+        # 1. 精确日历日期优先
+        #
+        # 必须放在“付款N天”之前，
+        # 防止：
+        #
+        # 2026年5月31日产品A付款5天...
+        #
+        # 被“付款5天”误识别成 Current。
         # --------------------------------------------------------
-        if re.search(
-            r"2025年",
+        date_match = re.search(
+            (
+                r"2026年"
+                r"(\d{1,2})月"
+                r"(\d{1,2})日"
+            ),
             text,
-        ):
+        )
+
+        if date_match:
+
+            month = int(
+                date_match.group(1)
+            )
+
+            day = int(
+                date_match.group(2)
+            )
+
+            query_date = date(
+                2026,
+                month,
+                day,
+            )
+
+            product_v2_boundary = date(
+                2026,
+                6,
+                1,
+            )
+
+            if (
+                query_date
+                >= product_v2_boundary
+            ):
+                return "Current"
+
             return "Historical"
-        
-        if (
-            "付款后" in text
-            and re.search(
-                r"付款后\d+天",
+
+        # --------------------------------------------------------
+        # 2. 明确 Historical 语义
+        # --------------------------------------------------------
+        explicit_historical = (
+            "2025年" in text
+            or "旧版" in text
+            or "老版" in text
+            or "历史版本" in text
+            or "历史规则" in text
+        )
+
+        # --------------------------------------------------------
+        # Comparison 不在这里强行 Historical。
+        #
+        # 类似：
+        # “现在和旧版有什么不同？”
+        #
+        # 应继续由原 Product Version Resolver
+        # 输出 Comparison。
+        # --------------------------------------------------------
+        comparison_intent = (
+            (
+                "现在" in text
+                or "当前" in text
+                or "新版" in text
+            )
+            and (
+                "旧版" in text
+                or "老版" in text
+            )
+            and any(
+                term in text
+                for term in (
+                    "不同",
+                    "区别",
+                    "变化",
+                    "比较",
+                    "分别",
+                )
+            )
+        )
+
+        if comparison_intent:
+            return None
+
+        if explicit_historical:
+            return "Historical"
+
+        # --------------------------------------------------------
+        # 3. 购买后的相对天数
+        #
+        # 这些是退款资格条件，
+        # 不是知识版本时间。
+        # --------------------------------------------------------
+        relative_purchase_time_patterns = (
+            r"付款后\d+天",
+            r"付款\d+天后",
+            r"购买后\d+天",
+            r"购买\d+天后",
+            r"买了\d+天",
+            r"买了产品A第\d+天",
+            r"第\d+天才想退",
+            r"第\d+天.*退",
+        )
+
+        if any(
+            re.search(
+                pattern,
                 text,
             )
+            for pattern
+            in relative_purchase_time_patterns
         ):
             return "Current"
-
-        # 同时兼容：
-        #
-        # 产品A付款10天……
-        #
-        # 防止把“10天”误认为历史日期。
-        if re.search(
-            r"付款\d+天",
-            text,
-        ):
-            return "Current"
-
     # ============================================================
     # HR
     # ============================================================
@@ -237,11 +330,33 @@ def apply_frozen_domain_guard(
     )
 
     # ============================================================
-    # 1. Product 明确实体优先
+    # 1. Finance Restricted 高置信语义优先
     #
-    # 避免：
-    # “产品A明年会涨价吗？”
-    # 因“涨”之类语义被错误吸收。
+    # 例如：
+    #
+    # “只回答是或否：10万元以上是不是CEO要审批？”
+    #
+    # 这类 Query 中的“只回答是或否”
+    # 可能诱导 LLM Domain Router 输出“是/否”。
+    #
+    # 但其真实业务语义已经能够被
+    # Frozen Finance Sensitivity Guard
+    # 确定为 Restricted Finance。
+    # ============================================================
+    finance_sensitivity = (
+        apply_finance_sensitivity_guard(
+            query
+        )
+    )
+
+    if (
+        finance_sensitivity
+        == "Restricted"
+    ):
+        return "Finance"
+
+    # ============================================================
+    # 2. Product 明确实体
     # ============================================================
     product_terms = (
         "产品A",
@@ -254,13 +369,7 @@ def apply_frozen_domain_guard(
         return "Product"
 
     # ============================================================
-    # 2. Service 明确实体优先
-    #
-    # 例如：
-    # 客服今年会增加夜班吗？
-    #
-    # 虽然“夜班”具有人员安排语义，
-    # 但明确主体是客服业务域。
+    # 3. Service 明确实体
     # ============================================================
     service_terms = (
         "客服",
@@ -277,17 +386,7 @@ def apply_frozen_domain_guard(
         return "Service"
 
     # ============================================================
-    # 3. HR 人员 / 薪酬 / 招聘语义
-    #
-    # 用于第四轮剩余错路由：
-    #
-    # X001 公司今年会涨薪吗？
-    # X201 公司今年会涨薪吗？
-    # H304 公司今年会统一涨薪吗？
-    # N104 公司今年会不会发年终奖？
-    #
-    # 这些不是 Finance Restricted，
-    # 而是 HR 人事 / 薪酬规划问题。
+    # 4. HR 人事 / 薪酬 / 招聘
     # ============================================================
     hr_terms = (
         "涨薪",
@@ -309,10 +408,4 @@ def apply_frozen_domain_guard(
     ):
         return "HR"
 
-    # ============================================================
-    # 没有高置信冻结规则
-    #
-    # 返回 None，
-    # 继续使用原 Domain Classifier。
-    # ============================================================
     return None

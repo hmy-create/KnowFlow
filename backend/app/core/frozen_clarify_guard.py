@@ -245,7 +245,167 @@ def _service_response_time_guard(
         evidence_ids=evidence_ids,
         risk_flags=[],
     )
+def _finance_accommodation_city_guard(
+    query: str,
+    evidence: list[RetrievalCandidate],
+) -> EvidenceDecision | None:
+    """
+    Frozen Finance accommodation clarify rule.
 
+    住宿标准按城市级别不同。
+
+    如果用户询问住宿报销上限，
+    但没有提供城市或城市级别，
+    最终答案会因缺少该变量而不同，
+    因此必须 clarify。
+
+    例如：
+    - 出差住酒店能报多少？
+    - 酒店住宿报销上限多少？
+
+    不适用于：
+    - 北京住宿上限多少
+    - 一线城市住宿上限多少
+    - 新一线城市住宿标准多少
+    """
+
+    text = (
+        query
+        .replace(" ", "")
+    )
+
+    # ============================================================
+    # 必须是住宿语义
+    # ============================================================
+    accommodation_terms = (
+        "住宿",
+        "酒店",
+        "住酒店",
+        "房费",
+    )
+
+    has_accommodation = any(
+        term in text
+        for term in accommodation_terms
+    )
+
+    if not has_accommodation:
+        return None
+
+    # ============================================================
+    # 必须是在问住宿额度 / 标准
+    # ============================================================
+    limit_terms = (
+        "上限",
+        "标准",
+        "额度",
+        "多少钱",
+        "多少",
+        "最多",
+        "能报",
+        "报销",
+    )
+
+    has_limit_intent = any(
+        term in text
+        for term in limit_terms
+    )
+
+    if not has_limit_intent:
+        return None
+
+    # ============================================================
+    # 如果城市 / 城市等级已经明确，
+    # 就不应该 clarify。
+    #
+    # 后续 Conflict Guard / Judge
+    # 会继续处理实际规则。
+    # ============================================================
+    explicit_city_terms = (
+        "一线城市",
+        "北上广深",
+        "新一线",
+        "省会",
+        "其他城市",
+        "北京",
+        "上海",
+        "广州",
+        "深圳",
+    )
+
+    has_city = any(
+        term in text
+        for term in explicit_city_terms
+    )
+
+    if has_city:
+        return None
+
+    # ============================================================
+    # Evidence 必须真实显示存在不同城市标准
+    # ============================================================
+    relevant_evidence = []
+
+    for item in evidence:
+
+        evidence_text = (
+            item.text
+            or ""
+        )
+
+        section = (
+            item.section
+            or ""
+        )
+
+        if (
+            "住宿标准" in section
+            or "住宿建议标准" in section
+            or (
+                "一线城市" in evidence_text
+                and "其他城市" in evidence_text
+            )
+        ):
+            relevant_evidence.append(
+                item
+            )
+
+    if not relevant_evidence:
+        return None
+
+    evidence_ids = []
+
+    for item in relevant_evidence:
+
+        if (
+            item.chunk_id
+            not in evidence_ids
+        ):
+            evidence_ids.append(
+                item.chunk_id
+            )
+
+    return EvidenceDecision(
+        decision="clarify",
+
+        reason=(
+            "当前住宿报销标准按城市级别不同，"
+            "用户尚未提供出差城市或城市级别，"
+            "缺少该信息会改变最终答案。"
+        ),
+
+        clarifying_question=(
+            "请问您的出差城市是哪里，"
+            "或属于一线城市、新一线/省会城市"
+            "还是其他城市？"
+        ),
+
+        evidence_ids=(
+            evidence_ids
+        ),
+
+        risk_flags=[],
+    )
 
 def apply_frozen_clarify_guard(
     query: str,
@@ -264,6 +424,17 @@ def apply_frozen_clarify_guard(
         命中冻结的确定性规则，
         直接使用该状态。
     """
+    if domain == "Finance":
+
+        result = (
+            _finance_accommodation_city_guard(
+                query=query,
+                evidence=evidence,
+            )
+        )
+
+        if result is not None:
+            return result
 
     if domain == "HR":
         return _hr_trial_period_guard(
@@ -282,6 +453,8 @@ def apply_frozen_clarify_guard(
             query=query,
             evidence=evidence,
         )
+
+
 
     return None
 

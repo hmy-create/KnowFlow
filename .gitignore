@@ -39,3 +39,4 @@ build/
 *.db
 *.sqlite
 *.sqlite3
+eval/reports/
