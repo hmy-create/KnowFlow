@@ -1,0 +1,72 @@
+{
+  "source_file": "E:\\project\\KnowFlow\\eval\\frozen\\KnowFlow_Eval_Dataset_v1.0.xlsx",
+  "source_sheet": "Eval_Cases",
+  "output_file": "E:\\project\\KnowFlow\\eval\\core_61.csv",
+  "expected_case_count": 61,
+  "actual_case_count": 61,
+  "case_ids_unique": true,
+  "empty_query_count": 0,
+  "missing_expected_domain_count": 0,
+  "missing_expected_decision_count": 0,
+  "frozen_failed_count": 0,
+  "domain_counts": {
+    "Finance": 26,
+    "HR": 14,
+    "Product": 13,
+    "Service": 8
+  },
+  "version_counts": {
+    "Current": 51,
+    "Historical": 9,
+    "Comparison": 1
+  },
+  "sensitivity_counts": {
+    "Normal": 54,
+    "Restricted": 7
+  },
+  "decision_counts": {
+    "conflict": 4,
+    "answer": 35,
+    "refuse": 10,
+    "no_access": 5,
+    "clarify": 7
+  },
+  "role_counts": {
+    "employee": 58,
+    "finance_manager": 2,
+    "admin": 1
+  },
+  "category_counts": {
+    "conflict": 4,
+    "current": 22,
+    "refuse": 10,
+    "historical": 7,
+    "permission": 7,
+    "clarify": 7,
+    "version": 4
+  },
+  "clarify_case_count": 7,
+  "clarify_case_ids": [
+    "H302",
+    "P303",
+    "S303",
+    "C101",
+    "C102",
+    "C103",
+    "C104"
+  ],
+  "unavailable_structured_gold": [
+    "expected_permission_decision",
+    "relevant_document_ids",
+    "relevant_chunk_ids",
+    "expected_citation_document_ids",
+    "expected_citation_chunk_ids"
+  ],
+  "conversion_policy": {
+    "gold_source": "Frozen Eval_Cases sheet",
+    "runtime_user_fixture": "Generated only for executing FastAPI /chat; not treated as Gold.",
+    "missing_gold_policy": "Do not infer from current FastAPI output.",
+    "expected_source_policy": "Original filename-level expected_source is preserved verbatim; it is not silently converted to document_id."
+  },
+  "validation_passed": true
+}

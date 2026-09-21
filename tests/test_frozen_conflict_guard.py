@@ -109,3 +109,39 @@ def test_only_one_side_not_conflict():
     )
 
     assert result is None
+
+def test_beishangguangshen_hotel_wording_conflict():
+
+    result = apply_frozen_conflict_guard(
+        query=(
+            "北上广深出差住酒店"
+            "最多能报多少？"
+        ),
+        domain="Finance",
+        evidence=(
+            CURRENT_TRAVEL_EVIDENCE
+        ),
+    )
+
+    assert result is not None
+
+    assert (
+        result.decision
+        == "conflict"
+    )
+
+
+def test_unrelated_hotel_query_not_conflict():
+
+    result = apply_frozen_conflict_guard(
+        query=(
+            "其他城市住酒店"
+            "最多能报多少？"
+        ),
+        domain="Finance",
+        evidence=(
+            CURRENT_TRAVEL_EVIDENCE
+        ),
+    )
+
+    assert result is None

@@ -1,0 +1,37 @@
+{
+  "run_id": "RUN-20260920-185254-C430C8",
+  "dataset_name": "core_61",
+  "total_cases": 5,
+  "passed_cases": 5,
+  "failed_cases": 0,
+  "pass_rate": 1.0,
+  "metrics": {
+    "domain_frozen_parity_rate": 1.0,
+    "domain_expected_exact_rate": 1.0,
+    "version_accuracy": 1.0,
+    "sensitivity_accuracy": 1.0,
+    "permission_accuracy": null,
+    "decision_frozen_parity_rate": 1.0,
+    "decision_expected_accuracy": 1.0,
+    "clarifying_question_rate": null,
+    "trace_persistence_rate": 1.0,
+    "citation_alignment_rate": 1.0,
+    "citation_version_integrity_rate": 1.0,
+    "unauthorized_retrieval_rate": 0.0,
+    "recall_at_5": 1.0,
+    "recall_at_10": 1.0,
+    "mrr_at_10": 1.0,
+    "ndcg_at_10": 1.0,
+    "p95_latency_ms": 27602,
+    "avg_input_tokens": 2734.4,
+    "avg_output_tokens": 56.0,
+    "answer_correctness": null,
+    "faithfulness": null
+  },
+  "report_paths": {
+    "summary": "E:\\project\\KnowFlow\\eval\\reports\\RUN-20260920-185254-C430C8_summary.json",
+    "cases": "E:\\project\\KnowFlow\\eval\\reports\\RUN-20260920-185254-C430C8_cases.csv",
+    "badcases": "E:\\project\\KnowFlow\\eval\\reports\\RUN-20260920-185254-C430C8_badcases.jsonl",
+    "master_badcases": "E:\\project\\KnowFlow\\eval\\badcase_runtime.jsonl"
+  }
+}

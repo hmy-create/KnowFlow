@@ -1,0 +1,9 @@
+{
+  "total_cases": 61,
+  "enriched_cases": 46,
+  "no_structured_source_cases": 15,
+  "unresolved_cases": 0,
+  "unresolved": [],
+  "backup": "E:\\project\\KnowFlow\\eval\\core_61_before_document_gold.csv",
+  "output": "E:\\project\\KnowFlow\\eval\\core_61.csv"
+}

@@ -2,7 +2,12 @@ from app.models.user import User
 from app.models.document import Document
 from app.models.chunk import Chunk
 from app.models.trace import Trace, TraceRecord
-from app.models.eval import EvalCase
+from app.models.eval import (
+    EvalCase,
+    EvalCaseResult,
+    EvalRunSummary,
+    EvalUser,
+)
 from app.models.badcase import Badcase
 from app.models.permission import PermissionResult
 from app.models.version import (
@@ -26,6 +31,9 @@ __all__ = [
     "Trace",
     "TraceRecord",
     "EvalCase",
+    "EvalCaseResult",
+    "EvalRunSummary",
+    "EvalUser",
     "Badcase",
     "PermissionResult",
     "QueryTimeContext",

@@ -277,4 +277,221 @@ def apply_frozen_clarify_guard(
             evidence=evidence,
         )
 
+    if domain == "Product":
+        return _product_refund_scope_guard(
+            query=query,
+            evidence=evidence,
+        )
+
     return None
+
+def _product_refund_scope_guard(
+    query: str,
+    evidence: list[RetrievalCandidate],
+) -> EvidenceDecision | None:
+    """
+    Frozen Product refund clarify rule.
+
+    只处理真正缺少必要范围信息的
+    泛化退款流程问题。
+
+    必须避免 Product P-FIX 回退：
+
+    - 产品A退款规则是多少天？
+      → answer
+
+    - 产品A付款15天后还能无理由退款吗？
+      → answer
+
+    - 产品A付款10天、核心功能用了2次，
+      可以退款吗？
+      → answer
+
+    只有类似：
+
+    - 产品A怎么退款？
+    - 产品A退款怎么办？
+    - 产品A如何申请退款？
+
+    且 Evidence 明确显示不同产品类型
+    适用不同规则时，才 clarify。
+    """
+
+    text = (
+        query
+        .replace(" ", "")
+    )
+
+    # ============================================================
+    # 必须明确是 Product A Refund
+    # ============================================================
+    if (
+        "产品A" not in text
+        or "退款" not in text
+    ):
+        return None
+
+    # ============================================================
+    # 1. 已经在直接询问某条规则 / 条件
+    #
+    # 这些问题应该由 Evidence Judge
+    # 根据真实退款规则判断，
+    # 不能过度 clarify。
+    # ============================================================
+    direct_rule_terms = (
+        "多少天",
+        "几天",
+        "期限",
+        "规则",
+        "条件",
+        "能退款",
+        "可以退款",
+        "还能退款",
+        "还能无理由退款",
+        "无理由退款",
+        "退款资格",
+    )
+
+    if any(
+        term in text
+        for term in direct_rule_terms
+    ):
+        return None
+
+    # ============================================================
+    # 2. 用户已经提供退款资格事实
+    #
+    # P002 / P302:
+    #   付款15天后
+    #
+    # P-FIX:
+    #   付款10天 + 使用2次
+    #
+    # 都不应该 clarify。
+    # ============================================================
+    eligibility_terms = (
+        "付款",
+        "支付",
+        "用了",
+        "使用",
+        "核心功能",
+        "核心付费功能",
+        "使用次数",
+    )
+
+    if any(
+        term in text
+        for term in eligibility_terms
+    ):
+        return None
+
+    # ============================================================
+    # 3. 用户已经明确 Product Scope
+    # ============================================================
+    explicit_scope_terms = (
+        "标准版",
+        "月度订阅",
+        "年度订阅",
+        "企业定制",
+        "定制合同",
+    )
+
+    if any(
+        term in text
+        for term in explicit_scope_terms
+    ):
+        return None
+
+    # ============================================================
+    # 4. 只有真正泛化的退款流程问题才可能 clarify
+    # ============================================================
+    vague_refund_terms = (
+        "怎么退款",
+        "如何退款",
+        "退款怎么办",
+        "怎么退",
+        "如何申请退款",
+        "怎么申请退款",
+    )
+
+    if not any(
+        term in text
+        for term in vague_refund_terms
+    ):
+        return None
+
+    # ============================================================
+    # 5. Evidence 必须真的证明存在 Scope 差异
+    #
+    # 不能只根据 Query 凭空 clarify。
+    # ============================================================
+    evidence_text = "\n".join(
+        item.text
+        for item in evidence
+    )
+
+    has_standard_scope = (
+        "标准版" in evidence_text
+        or "月度" in evidence_text
+        or "年度" in evidence_text
+    )
+
+    has_custom_scope = (
+        "企业定制" in evidence_text
+        or "定制合同" in evidence_text
+        or "合同条款" in evidence_text
+    )
+
+    if not (
+        has_standard_scope
+        and has_custom_scope
+    ):
+        return None
+
+    # ============================================================
+    # 6. Citation Evidence
+    # ============================================================
+    evidence_ids = []
+
+    for item in evidence:
+
+        section = (
+            item.section
+            or ""
+        )
+
+        if (
+            "适用产品" in section
+            or "退款规则" in section
+        ):
+
+            if (
+                item.chunk_id
+                not in evidence_ids
+            ):
+                evidence_ids.append(
+                    item.chunk_id
+                )
+
+    return EvidenceDecision(
+        decision="clarify",
+
+        reason=(
+            "当前企业知识显示，产品A"
+            "标准订阅与企业定制合同"
+            "适用的退款规则不同，"
+            "而当前问题尚未说明"
+            "具体产品类型。"
+        ),
+
+        clarifying_question=(
+            "请确认您使用的是产品A标准版"
+            "月度/年度订阅，还是企业定制合同？"
+        ),
+
+        evidence_ids=(
+            evidence_ids
+        ),
+
+        risk_flags=[],
+    )
