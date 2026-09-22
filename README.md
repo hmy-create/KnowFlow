@@ -601,6 +601,19 @@ Citation
 
 ### Automated Evaluation
 
+```text
+docs/assets/eval-demo.png
+```
+
+建议截图：
+
+```text
+Gold100
+100 / 100 PASS
+```
+
+将图片放入 `docs/assets/` 后，将本节替换为：
+
 ```markdown
 ![KnowFlow Chat](docs/assets/chat-demo.png)
 
