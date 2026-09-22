@@ -1,0 +1,25 @@
+.git
+.github
+.venv
+venv
+__pycache__
+.pytest_cache
+*.pyc
+*.pyo
+
+.env
+
+eval/reports
+eval/badcase_runtime.jsonl
+
+docs/corpus
+
+Add-Content .dockerignore "`n!eval/"
+Add-Content .dockerignore "!eval/**"
+
+# S10 Eval assets must be copied into image
+!eval/
+!eval/**
+
+# Runtime reports are generated at runtime
+eval/reports/

@@ -1,0 +1,140 @@
+services:
+
+  postgres:
+    image: pgvector/pgvector:pg17
+    container_name: knowflow-postgres-s10
+
+    environment:
+      POSTGRES_DB: knowflow
+      POSTGRES_USER: knowflow
+      POSTGRES_PASSWORD: knowflow
+
+    ports:
+      - "5433:5432"
+
+    volumes:
+      - knowflow_s10_pgdata:/var/lib/postgresql/data
+
+      - type: bind
+        source: ./docker/postgres/init
+        target: /docker-entrypoint-initdb.d
+        read_only: true
+
+    healthcheck:
+      test:
+        [
+          "CMD-SHELL",
+          "pg_isready -U knowflow -d knowflow"
+        ]
+      interval: 5s
+      timeout: 5s
+      retries: 20
+
+    restart: unless-stopped
+
+
+  app:
+    build:
+      context: .
+      dockerfile: Dockerfile
+
+    image: knowflow-app
+    container_name: knowflow-app
+
+    depends_on:
+      postgres:
+        condition: service_healthy
+
+    environment:
+
+      # ========================================================
+      # KnowFlow PostgreSQL
+      # ========================================================
+
+      POSTGRES_HOST: postgres
+      POSTGRES_PORT: "5432"
+      POSTGRES_DB: knowflow
+      POSTGRES_USER: knowflow
+      POSTGRES_PASSWORD: knowflow
+
+      DATABASE_URL: >-
+        postgresql://knowflow:knowflow@postgres:5432/knowflow
+
+      PGHOST: postgres
+      PGPORT: "5432"
+      PGDATABASE: knowflow
+      PGUSER: knowflow
+      PGPASSWORD: knowflow
+
+      DB_HOST: postgres
+      DB_PORT: "5432"
+      DB_NAME: knowflow
+      DB_USER: knowflow
+      DB_PASSWORD: knowflow
+
+      # ========================================================
+      # Model / Runtime
+      # ========================================================
+
+      HF_HOME: /root/.cache/huggingface
+      TOKENIZERS_PARALLELISM: "false"
+
+      ZHIPUAI_API_KEY: ${ZHIPUAI_API_KEY}
+      ZHIPUAI_MODEL: ${ZHIPUAI_MODEL:-glm-4-flash}
+
+    ports:
+      - "8000:8000"
+
+    volumes:
+
+      # HuggingFace model cache
+      - hf_cache:/root/.cache/huggingface
+
+      # Eval reports can still be viewed directly on Windows
+      - type: bind
+        source: ./eval/reports
+        target: /app/eval/reports
+        bind:
+          create_host_path: false
+
+      # Runtime badcase pool:
+      # use Docker named volume instead of broken E: single-file bind
+      - badcase_runtime:/runtime/badcase
+
+    entrypoint:
+      - /bin/sh
+      - -c
+      - |
+        set -e
+
+        mkdir -p /runtime/badcase
+
+        if [ ! -f /runtime/badcase/badcase_runtime.jsonl ]; then
+          cp /app/eval/badcase_runtime.jsonl \
+             /runtime/badcase/badcase_runtime.jsonl
+        fi
+
+        rm -rf /app/eval/badcase_runtime.jsonl
+
+        ln -s \
+          /runtime/badcase/badcase_runtime.jsonl \
+          /app/eval/badcase_runtime.jsonl
+
+        exec python -m uvicorn \
+          app.s10_app:app \
+          --host 0.0.0.0 \
+          --port 8000
+
+    restart: unless-stopped
+
+
+volumes:
+
+  hf_cache:
+    name: knowflow_hf_cache
+
+  knowflow_s10_pgdata:
+    name: knowflow_knowflow_s10_pgdata
+
+  badcase_runtime:
+    name: knowflow_badcase_runtime

@@ -1,0 +1,137 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+    <meta charset="utf-8">
+    <title>KnowFlow · Trace</title>
+    <link rel="stylesheet"
+          href="/ui/styles.css">
+</head>
+<body>
+
+<header>
+    <div class="brand">
+        KnowFlow
+        <span>Enterprise Knowledge Agent</span>
+    </div>
+
+    <nav>
+        <a href="/ui/chat.html">Chat</a>
+        <a href="/ui/trace.html">Trace</a>
+        <a href="/ui/eval.html">Eval</a>
+        <a href="/ui/badcase.html">Badcase</a>
+    </nav>
+</header>
+
+
+<main>
+
+    <h1>Trace</h1>
+
+    <div class="subtitle">
+        按 trace_id 完整还原
+        Router / Filter / Retrieval /
+        Judge / Citation 结果。
+    </div>
+
+    <div class="card">
+
+        <div class="row">
+
+            <input id="traceId"
+                   placeholder="TR-...">
+
+            <button id="loadBtn">
+                查询 Trace
+            </button>
+
+            <button id="recentBtn">
+                最近 20 条
+            </button>
+
+        </div>
+
+    </div>
+
+    <div class="card">
+        <pre id="result">{}</pre>
+    </div>
+
+</main>
+
+<script src="/ui/common.js"></script>
+
+<script>
+
+const output =
+    document.getElementById(
+        "result"
+    );
+
+
+document
+.getElementById("loadBtn")
+.addEventListener(
+    "click",
+    async () => {
+
+        try {
+
+            const id =
+                document
+                .getElementById(
+                    "traceId"
+                ).value.trim();
+
+            const data =
+                await getJSON(
+                    `/ops/traces/${
+                        encodeURIComponent(id)
+                    }`
+                );
+
+            output.innerText =
+                pretty(data);
+
+        }
+        catch (error) {
+
+            output.innerText =
+                String(error);
+
+        }
+
+    }
+);
+
+
+document
+.getElementById("recentBtn")
+.addEventListener(
+    "click",
+    async () => {
+
+        try {
+
+            const data =
+                await getJSON(
+                    "/ops/traces?limit=20"
+                );
+
+            output.innerText =
+                pretty(data);
+
+        }
+        catch (error) {
+
+            output.innerText =
+                String(error);
+
+        }
+
+    }
+);
+
+</script>
+
+</body>
+</html>

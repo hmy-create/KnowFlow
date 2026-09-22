@@ -1,0 +1,202 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+    <meta charset="utf-8">
+    <title>KnowFlow · Eval</title>
+    <link rel="stylesheet"
+          href="/ui/styles.css">
+</head>
+<body>
+
+<header>
+    <div class="brand">
+        KnowFlow
+        <span>Enterprise Knowledge Agent</span>
+    </div>
+
+    <nav>
+        <a href="/ui/chat.html">Chat</a>
+        <a href="/ui/trace.html">Trace</a>
+        <a href="/ui/eval.html">Eval</a>
+        <a href="/ui/badcase.html">Badcase</a>
+    </nav>
+</header>
+
+
+<main>
+
+    <h1>Eval</h1>
+
+    <div class="subtitle">
+        运行冻结 Core61 或 Gold100 回归。
+    </div>
+
+    <div class="card">
+
+        <div class="grid">
+
+            <div>
+                <label>Dataset</label>
+                <select id="dataset">
+                    <option value="core_61">
+                        Core61
+                    </option>
+                    <option value="gold_v1">
+                        Gold100
+                    </option>
+                </select>
+            </div>
+
+            <div>
+                <label>Limit（可空）</label>
+                <input id="limit"
+                       type="number"
+                       min="1">
+            </div>
+
+        </div>
+
+        <br>
+
+        <label>
+            Case IDs（逗号分隔，可空）
+        </label>
+
+        <input id="caseIds"
+               placeholder="F001,H302,V101">
+
+        <br><br>
+
+        <button id="runBtn">
+            运行 Eval
+        </button>
+
+    </div>
+
+    <div class="card">
+
+        <div id="summary">
+            尚未运行。
+        </div>
+
+        <pre id="result">{}</pre>
+
+    </div>
+
+</main>
+
+<script src="/ui/common.js"></script>
+
+<script>
+
+document
+.getElementById("runBtn")
+.addEventListener(
+    "click",
+    async () => {
+
+        const button =
+            document.getElementById(
+                "runBtn"
+            );
+
+        setLoading(
+            button,
+            true
+        );
+
+        const output =
+            document.getElementById(
+                "result"
+            );
+
+        const summary =
+            document.getElementById(
+                "summary"
+            );
+
+        try {
+
+            const rawIds =
+                document
+                .getElementById(
+                    "caseIds"
+                )
+                .value;
+
+            const caseIds =
+                rawIds
+                .split(",")
+                .map(x => x.trim())
+                .filter(Boolean);
+
+            const rawLimit =
+                document
+                .getElementById(
+                    "limit"
+                )
+                .value;
+
+            const payload = {
+                dataset:
+                    document
+                    .getElementById(
+                        "dataset"
+                    ).value,
+
+                limit:
+                    rawLimit
+                    ? Number(rawLimit)
+                    : null,
+
+                case_ids:
+                    caseIds
+            };
+
+            const data =
+                await postJSON(
+                    "/eval/run",
+                    payload
+                );
+
+            summary.innerHTML =
+                `<span class="badge">
+                    ${data.dataset_name}
+                 </span>
+                 <span class="badge">
+                    passed=${
+                        data.passed_cases
+                    }/${
+                        data.total_cases
+                    }
+                 </span>
+                 <span class="badge">
+                    run=${data.run_id}
+                 </span>`;
+
+            output.innerText =
+                pretty(data);
+
+        }
+        catch (error) {
+
+            output.innerText =
+                String(error);
+
+        }
+        finally {
+
+            setLoading(
+                button,
+                false
+            );
+
+        }
+
+    }
+);
+
+</script>
+
+</body>
+</html>

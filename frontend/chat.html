@@ -1,0 +1,310 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+    <meta charset="utf-8">
+    <title>KnowFlow · Chat</title>
+    <link rel="stylesheet"
+          href="/ui/styles.css">
+</head>
+<body>
+
+<header>
+    <div class="brand">
+        KnowFlow
+        <span>Enterprise Knowledge Agent</span>
+    </div>
+
+    <nav>
+        <a href="/ui/chat.html">Chat</a>
+        <a href="/ui/trace.html">Trace</a>
+        <a href="/ui/eval.html">Eval</a>
+        <a href="/ui/badcase.html">Badcase</a>
+    </nav>
+</header>
+
+
+<main>
+
+    <h1>智能问答</h1>
+
+    <div class="subtitle">
+        严格依据企业知识证据、
+        权限和版本规则进行判断。
+    </div>
+
+    <div class="card">
+
+        <div class="grid">
+
+            <div>
+                <label>身份预设</label>
+                <select id="preset">
+                    <option value="hr">
+                        HR 普通员工
+                    </option>
+                    <option value="finance">
+                        Finance 普通员工
+                    </option>
+                    <option value="product">
+                        Product 普通员工
+                    </option>
+                    <option value="service">
+                        Service 普通员工
+                    </option>
+                    <option value="finance_manager">
+                        Finance Manager
+                    </option>
+                    <option value="admin">
+                        Admin
+                    </option>
+                </select>
+            </div>
+
+            <div>
+                <label>User ID</label>
+                <input id="userId"
+                       value="UI001">
+            </div>
+
+            <div>
+                <label>Department</label>
+                <input id="department"
+                       value="hr">
+            </div>
+
+            <div>
+                <label>Role</label>
+                <input id="role"
+                       value="employee">
+            </div>
+
+        </div>
+
+        <br>
+
+        <label>Authorized KB IDs</label>
+        <input id="kbIds"
+               value="KB_HR_PUBLIC">
+
+        <br><br>
+
+        <label>问题</label>
+
+        <textarea id="query"
+        >试用期多久？</textarea>
+
+        <br>
+
+        <button id="sendBtn">
+            发送问题
+        </button>
+
+    </div>
+
+    <div class="card">
+
+        <div id="summary">
+            尚未发起请求。
+        </div>
+
+        <pre id="result">{}</pre>
+
+    </div>
+
+</main>
+
+<script src="/ui/common.js"></script>
+
+<script>
+
+const PRESETS = {
+    hr: {
+        department: "hr",
+        role: "employee",
+        kb: ["KB_HR_PUBLIC"]
+    },
+    finance: {
+        department: "finance",
+        role: "employee",
+        kb: ["KB_FINANCE_PUBLIC"]
+    },
+    product: {
+        department: "product",
+        role: "employee",
+        kb: ["KB_PRODUCT_PUBLIC"]
+    },
+    service: {
+        department: "service",
+        role: "employee",
+        kb: ["KB_SERVICE_PUBLIC"]
+    },
+    finance_manager: {
+        department: "finance",
+        role: "finance_manager",
+        kb: [
+            "KB_FINANCE_PUBLIC",
+            "KB_FINANCE_PRIVATE"
+        ]
+    },
+    admin: {
+        department: "admin",
+        role: "admin",
+        kb: [
+            "KB_FINANCE_PUBLIC",
+            "KB_HR_PUBLIC",
+            "KB_PRODUCT_PUBLIC",
+            "KB_SERVICE_PUBLIC",
+            "KB_FINANCE_PRIVATE"
+        ]
+    }
+};
+
+
+document
+.getElementById("preset")
+.addEventListener(
+    "change",
+    (event) => {
+
+        const p =
+            PRESETS[event.target.value];
+
+        document.getElementById(
+            "department"
+        ).value = p.department;
+
+        document.getElementById(
+            "role"
+        ).value = p.role;
+
+        document.getElementById(
+            "kbIds"
+        ).value = p.kb.join(",");
+    }
+);
+
+
+document
+.getElementById("sendBtn")
+.addEventListener(
+    "click",
+    async () => {
+
+        const button =
+            document.getElementById(
+                "sendBtn"
+            );
+
+        const summary =
+            document.getElementById(
+                "summary"
+            );
+
+        const result =
+            document.getElementById(
+                "result"
+            );
+
+        setLoading(
+            button,
+            true
+        );
+
+        try {
+
+            const kbIds =
+                document
+                .getElementById("kbIds")
+                .value
+                .split(",")
+                .map(v => v.trim())
+                .filter(Boolean);
+
+            const payload = {
+                query:
+                    document
+                    .getElementById("query")
+                    .value,
+
+                user: {
+                    user_id:
+                        document
+                        .getElementById(
+                            "userId"
+                        ).value,
+
+                    department:
+                        document
+                        .getElementById(
+                            "department"
+                        ).value,
+
+                    role:
+                        document
+                        .getElementById(
+                            "role"
+                        ).value,
+
+                    authorized_kb_ids:
+                        kbIds
+                }
+            };
+
+            const data =
+                await postJSON(
+                    "/chat",
+                    payload
+                );
+
+            summary.innerHTML =
+                `<span class="badge">
+                    ${data.domain}
+                 </span>
+                 <span class="badge">
+                    ${data.decision}
+                 </span>
+                 <span class="badge">
+                    trace=${
+                        data.trace_id || "-"
+                    }
+                 </span>
+                 <br><br>
+                 <b>Reason:</b>
+                 ${
+                    data.reason || "-"
+                 }
+                 ${
+                    data.clarifying_question
+                    ? `<br><br><b>Clarify:</b>
+                       ${data.clarifying_question}`
+                    : ""
+                 }`;
+
+            result.innerText =
+                pretty(data);
+
+        }
+        catch (error) {
+
+            summary.innerHTML =
+                `<span class="error">
+                    ${error}
+                 </span>`;
+
+        }
+        finally {
+
+            setLoading(
+                button,
+                false
+            );
+
+        }
+
+    }
+);
+
+</script>
+
+</body>
+</html>

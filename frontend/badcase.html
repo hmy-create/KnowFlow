@@ -1,0 +1,121 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+    <meta charset="utf-8">
+    <title>KnowFlow · Badcase</title>
+    <link rel="stylesheet"
+          href="/ui/styles.css">
+</head>
+<body>
+
+<header>
+    <div class="brand">
+        KnowFlow
+        <span>Enterprise Knowledge Agent</span>
+    </div>
+
+    <nav>
+        <a href="/ui/chat.html">Chat</a>
+        <a href="/ui/trace.html">Trace</a>
+        <a href="/ui/eval.html">Eval</a>
+        <a href="/ui/badcase.html">Badcase</a>
+    </nav>
+</header>
+
+
+<main>
+
+    <h1>Badcase</h1>
+
+    <div class="subtitle">
+        查看 S9/S10 自动评测产生的
+        runtime badcase pool。
+    </div>
+
+    <div class="card">
+
+        <div class="row">
+
+            <input id="limit"
+                   type="number"
+                   min="1"
+                   max="500"
+                   value="50">
+
+            <button id="loadBtn">
+                刷新
+            </button>
+
+        </div>
+
+    </div>
+
+    <div class="card">
+
+        <div id="summary"></div>
+
+        <pre id="result">[]</pre>
+
+    </div>
+
+</main>
+
+<script src="/ui/common.js"></script>
+
+<script>
+
+async function loadBadcases() {
+
+    const limit =
+        document
+        .getElementById(
+            "limit"
+        ).value;
+
+    const data =
+        await getJSON(
+            `/ops/badcases?limit=${
+                encodeURIComponent(limit)
+            }`
+        );
+
+    document.getElementById(
+        "summary"
+    ).innerHTML =
+        `<span class="badge">
+            count=${data.count}
+         </span>`;
+
+    document.getElementById(
+        "result"
+    ).innerText =
+        pretty(data.items);
+}
+
+
+document
+.getElementById("loadBtn")
+.addEventListener(
+    "click",
+    async () => {
+
+        try {
+            await loadBadcases();
+        }
+        catch (error) {
+            document.getElementById(
+                "result"
+            ).innerText =
+                String(error);
+        }
+
+    }
+);
+
+
+loadBadcases();
+
+</script>
+
+</body>
+</html>
