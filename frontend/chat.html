@@ -2,309 +2,323 @@
 <html lang="zh-CN">
 <head>
     <meta charset="utf-8">
-    <title>KnowFlow · Chat</title>
-    <link rel="stylesheet"
-          href="/ui/styles.css">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>KnowFlow · 智能问答</title>
+    <link rel="stylesheet" href="/ui/styles.css">
 </head>
-<body>
-
-<header>
-    <div class="brand">
-        KnowFlow
-        <span>Enterprise Knowledge Agent</span>
-    </div>
-
-    <nav>
-        <a href="/ui/chat.html">Chat</a>
-        <a href="/ui/trace.html">Trace</a>
-        <a href="/ui/eval.html">Eval</a>
-        <a href="/ui/badcase.html">Badcase</a>
-    </nav>
-</header>
-
-
-<main>
-
-    <h1>智能问答</h1>
-
-    <div class="subtitle">
-        严格依据企业知识证据、
-        权限和版本规则进行判断。
-    </div>
-
-    <div class="card">
-
-        <div class="grid">
-
-            <div>
-                <label>身份预设</label>
-                <select id="preset">
-                    <option value="hr">
-                        HR 普通员工
-                    </option>
-                    <option value="finance">
-                        Finance 普通员工
-                    </option>
-                    <option value="product">
-                        Product 普通员工
-                    </option>
-                    <option value="service">
-                        Service 普通员工
-                    </option>
-                    <option value="finance_manager">
-                        Finance Manager
-                    </option>
-                    <option value="admin">
-                        Admin
-                    </option>
-                </select>
+<body data-page="chat">
+<div class="app-shell">
+    <aside class="sidebar">
+        <div class="logo">
+            <div class="logo-mark">K</div>
+            <div class="logo-copy">
+                <strong>KnowFlow</strong>
+                <span>KNOWLEDGE AGENT</span>
             </div>
-
-            <div>
-                <label>User ID</label>
-                <input id="userId"
-                       value="UI001">
-            </div>
-
-            <div>
-                <label>Department</label>
-                <input id="department"
-                       value="hr">
-            </div>
-
-            <div>
-                <label>Role</label>
-                <input id="role"
-                       value="employee">
-            </div>
-
         </div>
 
-        <br>
-
-        <label>Authorized KB IDs</label>
-        <input id="kbIds"
-               value="KB_HR_PUBLIC">
-
-        <br><br>
-
-        <label>问题</label>
-
-        <textarea id="query"
-        >试用期多久？</textarea>
-
-        <br>
-
-        <button id="sendBtn">
-            发送问题
-        </button>
-
-    </div>
-
-    <div class="card">
-
-        <div id="summary">
-            尚未发起请求。
+        <div class="nav-section">
+            <div class="nav-title">工作台</div>
+            <a class="nav-link" data-nav="chat" href="/ui/chat.html">
+                <span class="nav-icon">问</span>智能问答
+            </a>
+            <a class="nav-link" data-nav="trace" href="/ui/trace.html">
+                <span class="nav-icon">迹</span>Trace 追踪
+            </a>
         </div>
 
-        <pre id="result">{}</pre>
+        <div class="nav-section">
+            <div class="nav-title">治理与评测</div>
+            <a class="nav-link" data-nav="eval" href="/ui/eval.html">
+                <span class="nav-icon">评</span>评测中心
+            </a>
+            <a class="nav-link" data-nav="badcase" href="/ui/badcase.html">
+                <span class="nav-icon">错</span>Badcase 池
+            </a>
+        </div>
 
-    </div>
+        <div class="sidebar-footer">
+            <div class="user-card">
+                <div class="avatar">演</div>
+                <div class="user-meta">
+                    <strong>演示员工</strong>
+                    <span>demo@company.com</span>
+                </div>
+            </div>
+        </div>
+    </aside>
 
-</main>
+    <section class="workspace">
+        <header class="topbar">
+            <div class="breadcrumb">KnowFlow / <strong>智能问答</strong></div>
+            <div class="top-actions">
+                <span class="env-chip">演示企业 · 私有可信知识域</span>
+            </div>
+        </header>
+
+        <main class="chat-content">
+            <div class="chat-grid">
+                <aside class="chat-history">
+                    <div class="chat-history-head">
+                        <strong style="font-size:12px">会话历史</strong>
+                        <span class="soft-chip">+</span>
+                    </div>
+                    <div class="history-list">
+                        <a class="history-item active" href="#">
+                            <span class="history-title">差旅报销需要哪些材料？</span>
+                            <span class="history-time">10分钟前</span>
+                        </a>
+                        <a class="history-item" href="#">
+                            <span class="history-title">新员工转正流程是什么？</span>
+                            <span class="history-time">1小时前</span>
+                        </a>
+                        <a class="history-item" href="#">
+                            <span class="history-title">产品 A 最新退款规则是什么？</span>
+                            <span class="history-time">昨天</span>
+                        </a>
+                        <a class="history-item" href="#">
+                            <span class="history-title">客服话术模板在哪里？</span>
+                            <span class="history-time">3天前</span>
+                        </a>
+                        <a class="history-item" href="#">
+                            <span class="history-title">2025 福利假期政策</span>
+                            <span class="history-time">上周</span>
+                        </a>
+                    </div>
+                </aside>
+
+                <section class="chat-main">
+                    <div class="chat-scroll" id="chatScroll">
+                        <div class="chat-empty" id="emptyState">
+                            <div class="chat-empty-inner">
+                                <div class="empty-icon">□</div>
+                                <h2>今天想查什么？</h2>
+                                <p>已连接企业可信治理知识体系，可放心提问</p>
+                                <div class="domain-tabs">
+                                    <button class="domain-tab active" type="button">全部</button>
+                                    <button class="domain-tab" type="button">HR</button>
+                                    <button class="domain-tab" type="button">财务</button>
+                                    <button class="domain-tab" type="button">产品</button>
+                                    <button class="domain-tab" type="button">客服</button>
+                                </div>
+                                <div class="quick-list">
+                                    <button class="quick-btn" data-query="现在一线城市出差住宿上限是多少？" type="button">一线城市住宿上限？</button>
+                                    <button class="quick-btn" data-query="试用期多久？" type="button">试用期多久？</button>
+                                    <button class="quick-btn" data-query="产品A付款10天，核心付费功能用了2次，可以退款吗？" type="button">产品 A 退款规则</button>
+                                    <button class="quick-btn" data-query="公司今年会不会裁员？" type="button">无依据问题测试</button>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div id="conversation" style="display:none"></div>
+                    </div>
+
+                    <div class="chat-composer-wrap">
+                        <div class="chat-composer">
+                            <textarea id="query" class="textarea" placeholder="输入您的问题，如：试用期如何计算？">试用期多久？</textarea>
+                            <div class="composer-footer">
+                                <div class="composer-left">
+                                    <select id="preset" class="mini-select">
+                                        <option value="hr">HR 普通员工</option>
+                                        <option value="finance">Finance 普通员工</option>
+                                        <option value="product">Product 普通员工</option>
+                                        <option value="service">Service 普通员工</option>
+                                        <option value="finance_manager">Finance Manager</option>
+                                        <option value="admin">Admin</option>
+                                    </select>
+                                    <span class="switch-label">● 严格基于知识库判断</span>
+                                </div>
+                                <button id="sendBtn" class="btn" type="button">发送问题</button>
+                            </div>
+
+                            <details class="advanced-config">
+                                <summary>演示身份与权限设置</summary>
+                                <div class="advanced-grid">
+                                    <input id="userId" class="input" value="UI001" placeholder="User ID">
+                                    <input id="department" class="input" value="hr" placeholder="Department">
+                                    <input id="role" class="input" value="employee" placeholder="Role">
+                                    <input id="kbIds" class="input" value="KB_HR_PUBLIC" placeholder="Authorized KB IDs">
+                                </div>
+                            </details>
+                        </div>
+                    </div>
+                </section>
+
+                <aside class="citation-panel">
+                    <div class="panel-header">
+                        <h3 class="panel-title">来源依据与引用</h3>
+                        <span class="soft-chip" id="citationCount">0</span>
+                    </div>
+                    <div class="citation-list" id="citationList">
+                        <div class="empty">生成判断后，相关可信证据将在此处展示。</div>
+                    </div>
+                </aside>
+            </div>
+        </main>
+    </section>
+</div>
 
 <script src="/ui/common.js"></script>
-
 <script>
-
 const PRESETS = {
-    hr: {
-        department: "hr",
-        role: "employee",
-        kb: ["KB_HR_PUBLIC"]
-    },
-    finance: {
-        department: "finance",
-        role: "employee",
-        kb: ["KB_FINANCE_PUBLIC"]
-    },
-    product: {
-        department: "product",
-        role: "employee",
-        kb: ["KB_PRODUCT_PUBLIC"]
-    },
-    service: {
-        department: "service",
-        role: "employee",
-        kb: ["KB_SERVICE_PUBLIC"]
-    },
+    hr: { department: "hr", role: "employee", kb: ["KB_HR_PUBLIC"] },
+    finance: { department: "finance", role: "employee", kb: ["KB_FINANCE_PUBLIC"] },
+    product: { department: "product", role: "employee", kb: ["KB_PRODUCT_PUBLIC"] },
+    service: { department: "service", role: "employee", kb: ["KB_SERVICE_PUBLIC"] },
     finance_manager: {
         department: "finance",
         role: "finance_manager",
-        kb: [
-            "KB_FINANCE_PUBLIC",
-            "KB_FINANCE_PRIVATE"
-        ]
+        kb: ["KB_FINANCE_PUBLIC", "KB_FINANCE_PRIVATE"]
     },
     admin: {
         department: "admin",
         role: "admin",
-        kb: [
-            "KB_FINANCE_PUBLIC",
-            "KB_HR_PUBLIC",
-            "KB_PRODUCT_PUBLIC",
-            "KB_SERVICE_PUBLIC",
-            "KB_FINANCE_PRIVATE"
-        ]
+        kb: ["KB_FINANCE_PUBLIC", "KB_HR_PUBLIC", "KB_PRODUCT_PUBLIC", "KB_SERVICE_PUBLIC", "KB_FINANCE_PRIVATE"]
     }
 };
 
+const STATE_TEXT = {
+    answer: "证据充分 · 可回答",
+    clarify: "需要补充确认",
+    conflict: "发现知识冲突",
+    refuse: "暂无可靠依据",
+    no_access: "无访问权限"
+};
 
-document
-.getElementById("preset")
-.addEventListener(
-    "change",
-    (event) => {
+function updatePreset(key) {
+    const p = PRESETS[key];
+    if (!p) return;
+    document.getElementById("department").value = p.department;
+    document.getElementById("role").value = p.role;
+    document.getElementById("kbIds").value = p.kb.join(",");
+}
 
-        const p =
-            PRESETS[event.target.value];
+function renderCitations(data) {
+    const list = document.getElementById("citationList");
+    const count = document.getElementById("citationCount");
+    const citations = Array.isArray(data.citations) ? data.citations : [];
 
-        document.getElementById(
-            "department"
-        ).value = p.department;
+    count.textContent = String(citations.length);
 
-        document.getElementById(
-            "role"
-        ).value = p.role;
-
-        document.getElementById(
-            "kbIds"
-        ).value = p.kb.join(",");
+    if (!citations.length) {
+        const noAccess = data.decision === "no_access";
+        list.innerHTML = `<div class="empty">${noAccess
+            ? "由于权限受限，未检索或加载相关原文内容。"
+            : "当前判断没有可展示的 Citation。"}</div>`;
+        return;
     }
-);
 
+    list.innerHTML = citations.map((item, index) => {
+        const title = pick(item, ["title", "document_title", "document_id"], "企业知识文档");
+        const version = pick(item, ["version_no", "version"], "-");
+        const section = pick(item, ["section"], "-");
+        const page = pick(item, ["page"], "-");
+        const text = pick(item, ["original_text", "text"], "");
 
-document
-.getElementById("sendBtn")
-.addEventListener(
-    "click",
-    async () => {
+        return `
+            <div class="citation-card">
+                <div class="citation-index">
+                    <h4>[${index + 1}] ${escapeHTML(title)}</h4>
+                    ${badge("已引用", "success")}
+                </div>
+                <div class="citation-meta">版本：${escapeHTML(version)} · 章节：${escapeHTML(section)} · 页码：${escapeHTML(page)}</div>
+                <div class="citation-text">${escapeHTML(text)}</div>
+            </div>
+        `;
+    }).join("");
+}
 
-        const button =
-            document.getElementById(
-                "sendBtn"
-            );
+function renderConversation(query, data) {
+    document.getElementById("emptyState").style.display = "none";
+    const conversation = document.getElementById("conversation");
+    conversation.style.display = "block";
 
-        const summary =
-            document.getElementById(
-                "summary"
-            );
+    const decision = data.decision || "-";
+    const title = STATE_TEXT[decision] || decision;
+    const version = data.version_mode || "-";
+    const trace = data.trace_id || "-";
+    const reason = data.reason || data.message || "-";
+    const clarify = data.clarifying_question || "";
+    const flags = Array.isArray(data.risk_flags) ? data.risk_flags : [];
 
-        const result =
-            document.getElementById(
-                "result"
-            );
+    conversation.innerHTML = `
+        <div class="message-query"><div class="query-bubble">${escapeHTML(query)}</div></div>
+        <div class="answer-card">
+            <div class="answer-head">
+                <div class="answer-state">
+                    ${badge(decision)}
+                    <div>
+                        <div class="answer-title">${escapeHTML(title)}</div>
+                        <div class="answer-meta">${escapeHTML(data.domain || "-")} · ${escapeHTML(version)}</div>
+                    </div>
+                </div>
+                <span class="soft-chip">${escapeHTML(trace)}</span>
+            </div>
+            <div class="answer-text">${escapeHTML(reason)}</div>
+            ${clarify ? `<div class="clarify-box"><strong>需要您补充：</strong><br>${escapeHTML(clarify)}</div>` : ""}
+            ${flags.length ? `<div class="risk-box"><strong>Risk Flags：</strong> ${flags.map(escapeHTML).join(" / ")}</div>` : ""}
+        </div>
+    `;
 
-        setLoading(
-            button,
-            true
-        );
+    renderCitations(data);
+    document.getElementById("chatScroll").scrollTop = 0;
+}
 
-        try {
+async function submitQuestion() {
+    const button = document.getElementById("sendBtn");
+    const query = document.getElementById("query").value.trim();
 
-            const kbIds =
-                document
-                .getElementById("kbIds")
-                .value
-                .split(",")
-                .map(v => v.trim())
-                .filter(Boolean);
+    if (!query) return;
 
-            const payload = {
-                query:
-                    document
-                    .getElementById("query")
-                    .value,
+    setLoading(button, true);
 
-                user: {
-                    user_id:
-                        document
-                        .getElementById(
-                            "userId"
-                        ).value,
+    try {
+        const kbIds = document.getElementById("kbIds").value
+            .split(",")
+            .map((v) => v.trim())
+            .filter(Boolean);
 
-                    department:
-                        document
-                        .getElementById(
-                            "department"
-                        ).value,
+        const payload = {
+            query,
+            user: {
+                user_id: document.getElementById("userId").value,
+                department: document.getElementById("department").value,
+                role: document.getElementById("role").value,
+                authorized_kb_ids: kbIds
+            }
+        };
 
-                    role:
-                        document
-                        .getElementById(
-                            "role"
-                        ).value,
-
-                    authorized_kb_ids:
-                        kbIds
-                }
-            };
-
-            const data =
-                await postJSON(
-                    "/chat",
-                    payload
-                );
-
-            summary.innerHTML =
-                `<span class="badge">
-                    ${data.domain}
-                 </span>
-                 <span class="badge">
-                    ${data.decision}
-                 </span>
-                 <span class="badge">
-                    trace=${
-                        data.trace_id || "-"
-                    }
-                 </span>
-                 <br><br>
-                 <b>Reason:</b>
-                 ${
-                    data.reason || "-"
-                 }
-                 ${
-                    data.clarifying_question
-                    ? `<br><br><b>Clarify:</b>
-                       ${data.clarifying_question}`
-                    : ""
-                 }`;
-
-            result.innerText =
-                pretty(data);
-
-        }
-        catch (error) {
-
-            summary.innerHTML =
-                `<span class="error">
-                    ${error}
-                 </span>`;
-
-        }
-        finally {
-
-            setLoading(
-                button,
-                false
-            );
-
-        }
-
+        const data = await postJSON("/chat", payload);
+        renderConversation(query, data);
+    } catch (error) {
+        renderConversation(query, {
+            decision: "refuse",
+            reason: `请求失败：${String(error)}`,
+            citations: []
+        });
+    } finally {
+        setLoading(button, false);
     }
-);
+}
 
+document.getElementById("preset").addEventListener("change", (event) => {
+    updatePreset(event.target.value);
+});
+
+document.getElementById("sendBtn").addEventListener("click", submitQuestion);
+
+document.getElementById("query").addEventListener("keydown", (event) => {
+    if ((event.ctrlKey || event.metaKey) && event.key === "Enter") {
+        submitQuestion();
+    }
+});
+
+document.querySelectorAll(".quick-btn").forEach((button) => {
+    button.addEventListener("click", () => {
+        document.getElementById("query").value = button.dataset.query || "";
+        submitQuestion();
+    });
+});
 </script>
-
 </body>
 </html>

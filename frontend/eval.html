@@ -2,201 +2,157 @@
 <html lang="zh-CN">
 <head>
     <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
     <title>KnowFlow · Eval</title>
-    <link rel="stylesheet"
-          href="/ui/styles.css">
+    <link rel="stylesheet" href="/ui/styles.css">
 </head>
-<body>
+<body data-page="eval">
+<div class="app-shell">
+    <aside class="sidebar">
+        <div class="logo"><div class="logo-mark">K</div><div class="logo-copy"><strong>KnowFlow</strong><span>KNOWLEDGE AGENT</span></div></div>
+        <div class="nav-section">
+            <div class="nav-title">工作台</div>
+            <a class="nav-link" data-nav="chat" href="/ui/chat.html"><span class="nav-icon">问</span>智能问答</a>
+            <a class="nav-link" data-nav="trace" href="/ui/trace.html"><span class="nav-icon">迹</span>Trace 追踪</a>
+        </div>
+        <div class="nav-section">
+            <div class="nav-title">KnowledgeOps</div>
+            <a class="nav-link" data-nav="badcase" href="/ui/badcase.html"><span class="nav-icon">错</span>Badcase 池</a>
+        </div>
+        <div class="nav-section">
+            <div class="nav-title">评测中心</div>
+            <a class="nav-link" data-nav="eval" href="/ui/eval.html"><span class="nav-icon">评</span>评测任务</a>
+        </div>
+        <div class="sidebar-footer"><div class="user-card"><div class="avatar">管</div><div class="user-meta"><strong>演示企业管理员</strong><span>admin@company.com</span></div></div></div>
+    </aside>
 
-<header>
-    <div class="brand">
-        KnowFlow
-        <span>Enterprise Knowledge Agent</span>
-    </div>
+    <section class="workspace">
+        <header class="topbar">
+            <div class="breadcrumb">KnowFlow / 评测中心 / <strong>自动评测</strong></div>
+            <div class="top-actions"><span class="env-chip">Frozen Eval · S9/S10</span></div>
+        </header>
 
-    <nav>
-        <a href="/ui/chat.html">Chat</a>
-        <a href="/ui/trace.html">Trace</a>
-        <a href="/ui/eval.html">Eval</a>
-        <a href="/ui/badcase.html">Badcase</a>
-    </nav>
-</header>
-
-
-<main>
-
-    <h1>Eval</h1>
-
-    <div class="subtitle">
-        运行冻结 Core61 或 Gold100 回归。
-    </div>
-
-    <div class="card">
-
-        <div class="grid">
-
-            <div>
-                <label>Dataset</label>
-                <select id="dataset">
-                    <option value="core_61">
-                        Core61
-                    </option>
-                    <option value="gold_v1">
-                        Gold100
-                    </option>
-                </select>
+        <main class="content">
+            <div class="page-header">
+                <div>
+                    <h1 class="page-title">评测中心</h1>
+                    <p class="page-subtitle">运行 Core61 / Gold100，验证 Domain、Version、Permission、Evidence State、Citation 与 Trace 是否发生回归。</p>
+                </div>
             </div>
 
-            <div>
-                <label>Limit（可空）</label>
-                <input id="limit"
-                       type="number"
-                       min="1">
+            <section class="panel" style="margin-bottom:15px">
+                <div class="eval-toolbar">
+                    <select id="dataset" class="select">
+                        <option value="core_61">Core61</option>
+                        <option value="gold_v1">Gold100</option>
+                    </select>
+                    <input id="limit" class="input" type="number" min="1" placeholder="Limit（可空）">
+                    <input id="caseIds" class="input" placeholder="Case IDs，逗号分隔；完整运行请留空">
+                    <button id="runBtn" class="btn">运行评测</button>
+                </div>
+            </section>
+
+            <div id="evalView">
+                <div class="kpi-grid">
+                    <div class="kpi"><div class="kpi-label">Core61</div><div class="kpi-value">61/61</div><div class="kpi-note">Frozen regression baseline</div></div>
+                    <div class="kpi"><div class="kpi-label">Gold100</div><div class="kpi-value">100/100</div><div class="kpi-note">Portfolio final regression</div></div>
+                    <div class="kpi"><div class="kpi-label">Unauthorized Retrieval</div><div class="kpi-value">0.0</div><div class="kpi-note">权限隔离指标</div></div>
+                    <div class="kpi"><div class="kpi-label">Citation Alignment</div><div class="kpi-value">1.0</div><div class="kpi-note">引用与证据一致性</div></div>
+                </div>
+                <div class="panel"><div class="empty">选择 Dataset 并运行评测。完整 Gold100 请将 Case IDs 与 Limit 留空。</div></div>
             </div>
+        </main>
+    </section>
+</div>
 
-        </div>
-
-        <br>
-
-        <label>
-            Case IDs（逗号分隔，可空）
-        </label>
-
-        <input id="caseIds"
-               placeholder="F001,H302,V101">
-
-        <br><br>
-
-        <button id="runBtn">
-            运行 Eval
-        </button>
-
+<div class="loading-overlay" id="loadingOverlay">
+    <div class="loading-card">
+        <div class="spinner"></div>
+        <strong>正在运行评测</strong>
+        <div class="muted" style="font-size:11px;margin-top:7px">Gold100 完整回归可能需要较长时间，请保持页面打开。</div>
     </div>
-
-    <div class="card">
-
-        <div id="summary">
-            尚未运行。
-        </div>
-
-        <pre id="result">{}</pre>
-
-    </div>
-
-</main>
+</div>
 
 <script src="/ui/common.js"></script>
-
 <script>
+const evalView = document.getElementById("evalView");
+const overlay = document.getElementById("loadingOverlay");
 
-document
-.getElementById("runBtn")
-.addEventListener(
-    "click",
-    async () => {
+function metricWidth(value) {
+    const n = Number(value);
+    if (!Number.isFinite(n)) return 0;
+    const pct = n <= 1 ? n * 100 : n;
+    return Math.max(0, Math.min(100, pct));
+}
 
-        const button =
-            document.getElementById(
-                "runBtn"
-            );
+function renderEval(data) {
+    const total = Number(data.total_cases || 0);
+    const passed = Number(data.passed_cases || 0);
+    const failed = Number(data.failed_cases || Math.max(0, total - passed));
+    const passRate = data.pass_rate !== undefined
+        ? formatPercent(data.pass_rate)
+        : (total ? formatPercent(passed / total) : "-");
+    const metrics = data.metrics || {};
 
-        setLoading(
-            button,
-            true
-        );
+    const metricEntries = Object.entries(metrics)
+        .filter(([, value]) => typeof value === "number" || typeof value === "string")
+        .slice(0, 12);
 
-        const output =
-            document.getElementById(
-                "result"
-            );
+    evalView.innerHTML = `
+        <div class="kpi-grid">
+            <div class="kpi"><div class="kpi-label">Total Cases</div><div class="kpi-value">${total}</div><div class="kpi-note">${escapeHTML(data.dataset_name || data.dataset || "-")}</div></div>
+            <div class="kpi"><div class="kpi-label">Passed</div><div class="kpi-value" style="color:var(--green)">${passed}</div><div class="kpi-note">通过用例</div></div>
+            <div class="kpi"><div class="kpi-label">Failed</div><div class="kpi-value" style="color:${failed ? "var(--red)" : "var(--green)"}">${failed}</div><div class="kpi-note">失败用例</div></div>
+            <div class="kpi"><div class="kpi-label">Pass Rate</div><div class="kpi-value">${escapeHTML(passRate)}</div><div class="kpi-note">run=${escapeHTML(data.run_id || "-")}</div></div>
+        </div>
 
-        const summary =
-            document.getElementById(
-                "summary"
-            );
+        <section class="panel" style="margin-bottom:14px">
+            <div class="panel-header"><h3 class="panel-title">核心指标</h3>${badge(failed ? "存在失败样本" : "全部通过", failed ? "fail" : "pass")}</div>
+            <div class="panel-body">
+                <div class="metric-board">
+                    ${metricEntries.length ? metricEntries.map(([name, value]) => `
+                        <div class="metric-card">
+                            <div class="metric-name">${escapeHTML(name)}</div>
+                            <div class="metric-main">${escapeHTML(safeText(value))}</div>
+                            <div class="metric-bar"><span style="width:${metricWidth(value)}%"></span></div>
+                        </div>
+                    `).join("") : `<div class="empty" style="grid-column:1/-1">本次响应未返回独立 metrics 字段。</div>`}
+                </div>
+            </div>
+        </section>
 
-        try {
+        <section class="panel">
+            <div class="panel-header"><h3 class="panel-title">运行结果</h3><span class="soft-chip">${escapeHTML(data.run_id || "-")}</span></div>
+            <div class="panel-body"><pre class="raw-box">${escapeHTML(pretty(data))}</pre></div>
+        </section>
+    `;
+}
 
-            const rawIds =
-                document
-                .getElementById(
-                    "caseIds"
-                )
-                .value;
+document.getElementById("runBtn").addEventListener("click", async () => {
+    const button = document.getElementById("runBtn");
+    setLoading(button, true);
+    overlay.classList.add("show");
 
-            const caseIds =
-                rawIds
-                .split(",")
-                .map(x => x.trim())
-                .filter(Boolean);
+    try {
+        const rawIds = document.getElementById("caseIds").value;
+        const caseIds = rawIds.split(",").map((x) => x.trim()).filter(Boolean);
+        const rawLimit = document.getElementById("limit").value;
 
-            const rawLimit =
-                document
-                .getElementById(
-                    "limit"
-                )
-                .value;
+        const payload = {
+            dataset: document.getElementById("dataset").value,
+            limit: rawLimit ? Number(rawLimit) : null,
+            case_ids: caseIds
+        };
 
-            const payload = {
-                dataset:
-                    document
-                    .getElementById(
-                        "dataset"
-                    ).value,
-
-                limit:
-                    rawLimit
-                    ? Number(rawLimit)
-                    : null,
-
-                case_ids:
-                    caseIds
-            };
-
-            const data =
-                await postJSON(
-                    "/eval/run",
-                    payload
-                );
-
-            summary.innerHTML =
-                `<span class="badge">
-                    ${data.dataset_name}
-                 </span>
-                 <span class="badge">
-                    passed=${
-                        data.passed_cases
-                    }/${
-                        data.total_cases
-                    }
-                 </span>
-                 <span class="badge">
-                    run=${data.run_id}
-                 </span>`;
-
-            output.innerText =
-                pretty(data);
-
-        }
-        catch (error) {
-
-            output.innerText =
-                String(error);
-
-        }
-        finally {
-
-            setLoading(
-                button,
-                false
-            );
-
-        }
-
+        const data = await postJSON("/eval/run", payload);
+        renderEval(data);
+    } catch (error) {
+        evalView.innerHTML = `<div class="panel"><div class="empty" style="color:var(--red)">评测失败：${escapeHTML(String(error))}</div></div>`;
+    } finally {
+        setLoading(button, false);
+        overlay.classList.remove("show");
     }
-);
-
+});
 </script>
-
 </body>
 </html>

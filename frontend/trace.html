@@ -2,136 +2,199 @@
 <html lang="zh-CN">
 <head>
     <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
     <title>KnowFlow · Trace</title>
-    <link rel="stylesheet"
-          href="/ui/styles.css">
+    <link rel="stylesheet" href="/ui/styles.css">
 </head>
-<body>
-
-<header>
-    <div class="brand">
-        KnowFlow
-        <span>Enterprise Knowledge Agent</span>
-    </div>
-
-    <nav>
-        <a href="/ui/chat.html">Chat</a>
-        <a href="/ui/trace.html">Trace</a>
-        <a href="/ui/eval.html">Eval</a>
-        <a href="/ui/badcase.html">Badcase</a>
-    </nav>
-</header>
-
-
-<main>
-
-    <h1>Trace</h1>
-
-    <div class="subtitle">
-        按 trace_id 完整还原
-        Router / Filter / Retrieval /
-        Judge / Citation 结果。
-    </div>
-
-    <div class="card">
-
-        <div class="row">
-
-            <input id="traceId"
-                   placeholder="TR-...">
-
-            <button id="loadBtn">
-                查询 Trace
-            </button>
-
-            <button id="recentBtn">
-                最近 20 条
-            </button>
-
+<body data-page="trace">
+<div class="app-shell">
+    <aside class="sidebar">
+        <div class="logo">
+            <div class="logo-mark">K</div>
+            <div class="logo-copy"><strong>KnowFlow</strong><span>KNOWLEDGE AGENT</span></div>
         </div>
+        <div class="nav-section">
+            <div class="nav-title">工作台</div>
+            <a class="nav-link" data-nav="chat" href="/ui/chat.html"><span class="nav-icon">问</span>智能问答</a>
+            <a class="nav-link" data-nav="trace" href="/ui/trace.html"><span class="nav-icon">迹</span>Trace 追踪</a>
+        </div>
+        <div class="nav-section">
+            <div class="nav-title">KnowledgeOps</div>
+            <a class="nav-link" data-nav="badcase" href="/ui/badcase.html"><span class="nav-icon">错</span>Badcase 池</a>
+        </div>
+        <div class="nav-section">
+            <div class="nav-title">评测中心</div>
+            <a class="nav-link" data-nav="eval" href="/ui/eval.html"><span class="nav-icon">评</span>评测任务</a>
+        </div>
+        <div class="sidebar-footer">
+            <div class="user-card"><div class="avatar">管</div><div class="user-meta"><strong>演示企业管理员</strong><span>admin@company.com</span></div></div>
+        </div>
+    </aside>
 
-    </div>
+    <section class="workspace">
+        <header class="topbar">
+            <div class="breadcrumb">KnowFlow / 追踪诊断 / <strong>Trace</strong></div>
+            <div class="top-actions"><span class="env-chip">当前知识库 · 全部文档</span></div>
+        </header>
 
-    <div class="card">
-        <pre id="result">{}</pre>
-    </div>
+        <main class="content">
+            <div class="page-header">
+                <div>
+                    <h1 class="page-title">请求链路追踪</h1>
+                    <p class="page-subtitle">还原 Domain、Permission、Version、Retrieval、Evidence State 与 Citation，快速定位 Badcase 根因。</p>
+                </div>
+            </div>
 
-</main>
+            <section class="panel" style="margin-bottom:14px">
+                <div class="trace-toolbar">
+                    <input id="traceId" class="input" placeholder="输入 trace_id，例如 TR-...">
+                    <button id="loadBtn" class="btn">查询 Trace</button>
+                    <button id="recentBtn" class="btn secondary">最近 20 条</button>
+                </div>
+            </section>
+
+            <div id="traceView">
+                <div class="panel"><div class="empty">输入 trace_id，或查看最近 20 条请求。</div></div>
+            </div>
+        </main>
+    </section>
+</div>
 
 <script src="/ui/common.js"></script>
-
 <script>
+const traceView = document.getElementById("traceView");
 
-const output =
-    document.getElementById(
-        "result"
-    );
+function len(value) {
+    return Array.isArray(value) ? value.length : 0;
+}
 
+function renderTrace(item) {
+    const retrieved = item.retrieved_chunks || [];
+    const citations = item.citations || [];
+    const permission = item.permission_filter || {};
+    const version = item.version_filter || {};
 
-document
-.getElementById("loadBtn")
-.addEventListener(
-    "click",
-    async () => {
+    traceView.innerHTML = `
+        <div class="trace-summary">
+            <div class="kpi"><div class="kpi-label">Domain</div><div class="kpi-value" style="font-size:18px">${escapeHTML(item.domain || "-")}</div><div class="kpi-note">路由结果</div></div>
+            <div class="kpi"><div class="kpi-label">Decision</div><div class="kpi-value" style="font-size:18px">${escapeHTML(item.decision || "-")}</div><div class="kpi-note">Evidence State</div></div>
+            <div class="kpi"><div class="kpi-label">Retrieved</div><div class="kpi-value">${len(retrieved)}</div><div class="kpi-note">进入 Trace 的 chunks</div></div>
+            <div class="kpi"><div class="kpi-label">Latency</div><div class="kpi-value" style="font-size:18px">${escapeHTML(safeText(item.latency_ms))} ms</div><div class="kpi-note">端到端耗时</div></div>
+        </div>
 
-        try {
+        <div class="panel" style="margin-bottom:14px">
+            <div class="panel-header"><h3 class="panel-title">Query</h3>${badge(item.trace_id || "trace")}</div>
+            <div class="panel-body" style="font-size:13px;line-height:1.7">${escapeHTML(item.query || "-")}</div>
+        </div>
 
-            const id =
-                document
-                .getElementById(
-                    "traceId"
-                ).value.trim();
+        <div class="trace-step">
+            <div class="trace-step-num">1</div>
+            <div>
+                <h4>Domain Router</h4>
+                <p>确定问题进入哪个企业知识域。</p>
+                <div class="trace-data-line">${badge(item.domain || "-")}</div>
+            </div>
+        </div>
 
-            const data =
-                await getJSON(
-                    `/ops/traces/${
-                        encodeURIComponent(id)
-                    }`
-                );
+        <div class="trace-step">
+            <div class="trace-step-num">2</div>
+            <div>
+                <h4>Permission & Version Scope</h4>
+                <p>在检索前完成访问权限和版本范围约束。</p>
+                <div class="trace-data-line">
+                    ${badge(pick(permission, ["permission_decision", "decision"], "allowed"))}
+                    ${badge(item.version_mode || pick(version, ["version_mode"], "-"))}
+                    ${item.query_date ? badge(`query_date=${item.query_date}`) : ""}
+                </div>
+            </div>
+        </div>
 
-            output.innerText =
-                pretty(data);
+        <div class="trace-step">
+            <div class="trace-step-num">3</div>
+            <div>
+                <h4>Retrieval & Rerank</h4>
+                <p>记录进入最终判断的 Chunk 与排序信息。</p>
+                <div class="trace-data-line">
+                    ${badge(`${len(retrieved)} chunks`)}
+                    ${badge(`${len(item.rerank_scores || [])} rerank scores`)}
+                </div>
+            </div>
+        </div>
 
-        }
-        catch (error) {
+        <div class="trace-step">
+            <div class="trace-step-num">4</div>
+            <div>
+                <h4>Evidence State & Citation</h4>
+                <p>最终判断以及可追溯证据。</p>
+                <div class="trace-data-line">
+                    ${badge(item.decision || "-")}
+                    ${badge(`${len(citations)} citations`)}
+                    ${item.prompt_version ? badge(item.prompt_version) : ""}
+                </div>
+            </div>
+        </div>
 
-            output.innerText =
-                String(error);
+        <details class="panel" style="margin-top:14px">
+            <summary class="panel-header" style="cursor:pointer"><h3 class="panel-title">Raw Trace JSON</h3></summary>
+            <div class="panel-body"><pre class="raw-box">${escapeHTML(pretty(item))}</pre></div>
+        </details>
+    `;
+}
 
-        }
+function renderRecent(data) {
+    const items = data.items || [];
+    traceView.innerHTML = `
+        <section class="panel">
+            <div class="panel-header"><h3 class="panel-title">最近请求</h3><span class="soft-chip">${items.length} 条</span></div>
+            <div class="table-wrap">
+                <table>
+                    <thead><tr><th>Trace ID</th><th>Query</th><th>Domain</th><th>Decision</th><th>Latency</th><th>操作</th></tr></thead>
+                    <tbody>
+                        ${items.map((item) => `
+                            <tr>
+                                <td>${escapeHTML(item.trace_id || "-")}</td>
+                                <td>${escapeHTML(item.query || "-")}</td>
+                                <td>${badge(item.domain || "-")}</td>
+                                <td>${badge(item.decision || "-")}</td>
+                                <td>${escapeHTML(safeText(item.latency_ms))} ms</td>
+                                <td><a class="table-action" data-trace="${escapeHTML(item.trace_id || "")}">查看</a></td>
+                            </tr>
+                        `).join("")}
+                    </tbody>
+                </table>
+            </div>
+        </section>
+    `;
 
+    traceView.querySelectorAll("[data-trace]").forEach((node) => {
+        node.addEventListener("click", async () => {
+            const id = node.dataset.trace;
+            document.getElementById("traceId").value = id;
+            const item = await getJSON(`/ops/traces/${encodeURIComponent(id)}`);
+            renderTrace(item);
+        });
+    });
+}
+
+document.getElementById("loadBtn").addEventListener("click", async () => {
+    try {
+        const id = document.getElementById("traceId").value.trim();
+        if (!id) return;
+        const data = await getJSON(`/ops/traces/${encodeURIComponent(id)}`);
+        renderTrace(data);
+    } catch (error) {
+        traceView.innerHTML = `<div class="panel"><div class="empty" style="color:var(--red)">${escapeHTML(String(error))}</div></div>`;
     }
-);
+});
 
-
-document
-.getElementById("recentBtn")
-.addEventListener(
-    "click",
-    async () => {
-
-        try {
-
-            const data =
-                await getJSON(
-                    "/ops/traces?limit=20"
-                );
-
-            output.innerText =
-                pretty(data);
-
-        }
-        catch (error) {
-
-            output.innerText =
-                String(error);
-
-        }
-
+document.getElementById("recentBtn").addEventListener("click", async () => {
+    try {
+        const data = await getJSON("/ops/traces?limit=20");
+        renderRecent(data);
+    } catch (error) {
+        traceView.innerHTML = `<div class="panel"><div class="empty" style="color:var(--red)">${escapeHTML(String(error))}</div></div>`;
     }
-);
-
+});
 </script>
-
 </body>
 </html>
